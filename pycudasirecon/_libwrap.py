@@ -1,189 +1,116 @@
+from ._ctyped import Library, CPointer
 import numpy as np
-from typing_extensions import Annotated
-
-from ._ctyped import Library
+from ctypes import c_short, c_ushort, c_int, c_float, c_long, c_uint, c_bool, Structure
 
 try:
-    lib = Library("libcudaDecon")
+    lib = Library("libpycudasirecon")
 except FileNotFoundError:
     raise FileNotFoundError(
-        "Unable to find library 'lidbcudaDecon'\n"
-        "Please try `conda install -c conda-forge cudadecon`."
+        "Unable to find library 'libpycudasirecon'\n"
+        "Please try `conda install -c conda-forge cudasirecon`."
     ) from None
 
 
-ndarray_uint16 = Annotated[np.ndarray, "uint16"]
+@lib.function
+def SR_new(nx: int, ny: int, nImages: int, configFileName: str) -> CPointer:
+    """Create new SIM_Reconstructor."""
 
 
 @lib.function
-def camcor_interface_init(nx: int, ny: int, nz: int, camparam: np.ndarray) -> int:
-    """Setup for camera corrections."""
+def SR_setRaw(self: CPointer, raw_data: np.ndarray, nx: int, ny: int, nz: int) -> None:
+    """Set raw data to reconstruct."""
 
 
 @lib.function
-def camcor_interface(
-    raw_data: ndarray_uint16, nx: int, ny: int, nz: int, result: ndarray_uint16
-) -> int:
-    """Execute camera corrections."""
+def SR_getResult(self: CPointer, result: np.ndarray) -> None:
+    """Get result of reconstruction (populate `result` buffer)."""
 
 
 @lib.function
-def RL_interface_init(
-    nx: int,
-    ny: int,
-    nz: int,
-    dxdata: float,
-    dzdata: float,
-    dxpsf: float,
-    dzpsf: float,
-    deskewAngle: float,
-    rotationAngle: float,
-    outputWidth: int,
-    otfpath: str,
-) -> int:
-    """Call RL_interface_init() before RL_interface when running decon.
-    nx, ny, and nz: raw image dimensions
-    dr: raw image pixel size
-    dz: raw image Z step
-    dr_psf: PSF pixel size
-    dz_psf: PSF Z step
-    deskewAngle: deskewing angle; usually -32.8 on Bi-chang scope and 32.8 on
-    Wes scope
-    rotationAngle: if 0 then no final rotation is done;
-        otherwise set to the same as deskewAngle
-    outputWidth: if set to 0, then calculate the output width because of
-    deskewing; otherwise use this value as the output width
-    OTF_file_name: file name of OTF
-    """
+def SR_getReconParams(self: CPointer) -> CPointer:
+    """Get current reconstruction parameters"""
 
 
 @lib.function
-def RL_interface(
-    raw_data: ndarray_uint16,
-    nx: int,
-    ny: int,
-    nz: int,
-    result: np.ndarray,
-    raw_deskewed_result: np.ndarray,
-    background: float,
-    bDoRescale: bool,
-    bSaveDeskewedRaw: bool,
-    nIters: int,
-    extraShift: int,
-    napodize: int = 0,
-    nZblend: int = 0,
-    padVal: float = 0.0,
-    bDupRevStack: bool = False,
-) -> int:
-    """Perform decon."""
+def SR_getImageParams(self: CPointer) -> CPointer:
+    """Get current image parameters."""
 
 
-# The following are used between init and RL_interface to
-# retrieve the post-deskewed image dimensions
-# can be used to allocate result buffer before calling RL_interface()
-@lib.function
-def get_output_nx() -> int:
-    ...
+class ReconParams(Structure):
+    _fields_ = [
+        ("k0startangle", c_float),
+        ("linespacing", c_float),
+        ("na", c_float),
+        ("nimm", c_float),
+        ("ndirs", c_int),
+        ("nphases", c_int),
+        ("norders_output", c_int),
+        ("norders", c_int),
+        ("phaseSteps", c_long),
+        ("bTwolens", c_int),
+        ("bFastSIM", c_int),
+        ("bBessel", c_int),
+        ("BesselNA", c_float),
+        ("BesselLambdaEx", c_float),
+        ("deskewAngle", c_float),
+        ("extraShift", c_int),
+        ("bNoRecon", c_bool),
+        ("cropXYto", c_uint),
+        ("bWriteTitle", c_int),
+        ("zoomfact", c_float),
+        ("z_zoom", c_int),
+        ("nzPadTo", c_int),
+        ("explodefact", c_float),
+        ("bFilteroverlaps", c_int),
+        ("recalcarrays", c_int),
+        ("napodize", c_int),
+        ("bSearchforvector", c_int),
+        ("bUseTime0k0", c_int),
+        ("apodizeoutput", c_int),
+        ("apoGamma", c_float),
+        ("bSuppress_singularities", c_int),
+        ("suppression_radius", c_int),
+        ("bDampenOrder0", c_int),
+        ("bFitallphases", c_int),
+        ("do_rescale", c_int),
+        ("equalizez", c_int),
+        ("equalizet", c_int),
+        ("bNoKz0", c_int),
+        ("wiener", c_float),
+        ("wienerInr", c_float),
+        # there are more ...
+    ]
+
+    def __str__(self):
+        return (
+            f"<ReconParams ndirs={self.ndirs} nphases={self.nphases} "
+            f"linespacing={self.linespacing:0.3f} ... >"
+        )
 
 
-@lib.function
-def get_output_ny() -> int:
-    ...
+class ImageParams(Structure):
+    _fields_ = [
+        ("nx", c_int),  # image's width after deskewing or same as "nx_raw"
+        ("nx_raw", c_int),  # raw image's width before deskewing
+        ("ny", c_int),
+        ("nz", c_int),
+        ("nz0", c_int),
+        ("nwaves", c_short),
+        ("wave0", c_short),
+        ("wave1", c_short),
+        ("wave2", c_short),
+        ("wave3", c_short),
+        ("wave4", c_short),
+        ("ntimes", c_short),
+        ("curTimeIdx", c_ushort),
+        ("dxy", c_float),
+        ("dz", c_float),
+        ("dz_raw", c_float),
+        ("inscale", c_float),
+    ]
 
-
-@lib.function
-def get_output_nz() -> int:
-    ...
-
-
-@lib.function
-def RL_cleanup() -> None:
-    """Release GPU buffer and cleanup after deconvolution
-
-    Call this before program quits to release global GPUBuffer d_interpOTF.
-
-    - Resets any bleach corrections
-    - Removes OTF from GPU buffer
-    - Destroys cuFFT plan
-    - Releases GPU buffers
-    """
-
-
-@lib.function
-def cuda_reset() -> None:
-    """Calls `cudaDeviceReset`
-
-    Destroy all allocations and reset all state on the current device
-    in the current process.
-    """
-
-
-@lib.function
-def Deskew_interface(
-    raw_data: np.ndarray,
-    nx: int,
-    ny: int,
-    nz: int,
-    dz: float,
-    dr: float,
-    deskewAngle: float,
-    result: np.ndarray,
-    outputWidth: int,
-    extraShift: int,
-    padVal: float = 0,
-) -> int:
-    ...
-
-
-@lib.function
-def Affine_interface(
-    raw_data: np.ndarray,
-    nx: int,
-    ny: int,
-    nz: int,
-    result: np.ndarray,
-    affMat: np.ndarray,
-) -> int:
-    ...
-
-
-@lib.function
-def Affine_interface_RA(
-    raw_data: np.ndarray,
-    nx: int,
-    ny: int,
-    nz: int,
-    dx: float,
-    dy: float,
-    dz: float,
-    result: np.ndarray,
-    affMat: np.ndarray,
-) -> int:
-    ...
-
-
-try:
-    otf_lib = Library("libradialft")
-except FileNotFoundError:
-    raise FileNotFoundError(
-        "Unable to find library 'libradialft'\n"
-        "Please try `conda install -c conda-forge cudadecon`."
-    ) from None
-
-
-@otf_lib.function
-def makeOTF(
-    ifiles: str,
-    ofiles: str,
-    lambdanm: int = 520,
-    dz: float = 0.102,
-    interpkr: int = 10,
-    bUserBackground: bool = False,
-    background: float = 90,
-    NA: float = 1.25,
-    NIMM: float = 1.3,
-    dr: float = 0.102,
-    krmax: int = 0,
-    bDoCleanup: bool = False,
-):
-    """Make OTF file(s) from `ifiles`, write to `ofiles`."""
+    def __str__(self):
+        return (
+            f"<ImageParams nz={self.nz} ny={self.ny} nx={self.nx} nt={self.ntimes} "
+            f"dxy={self.dxy:0.3f} dz={self.dz:0.3f} ... >"
+        )

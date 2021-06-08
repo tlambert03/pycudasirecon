@@ -4,9 +4,13 @@ import os
 import sys
 from ctypes.util import find_library
 from inspect import Parameter, signature
-from typing import Callable, Optional, Type
+from typing import Callable, Optional, Type, NewType
+from typing_extensions import Annotated
 
 import numpy as np
+
+ndarray_uint16 = Annotated[np.ndarray, "uint16"]
+CPointer = NewType("CPointer", int)
 
 if sys.version_info >= (3, 7):
     from typing_extensions import Annotated, get_args, get_origin
@@ -98,5 +102,6 @@ def cast_type(hint: Type) -> Optional[Type]:
         float: ctypes.c_float,
         int: ctypes.c_int,
         str: ctypes.c_char_p,
+        CPointer: ctypes.c_void_p,
         np.ndarray: np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"),
     }[hint]
