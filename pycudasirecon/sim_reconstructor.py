@@ -1,3 +1,4 @@
+from typing import Tuple, Union
 import numpy as np
 
 from ._libwrap import (
@@ -12,23 +13,52 @@ from ._libwrap import (
 
 
 class SIMReconstructor:
-    """Main class for SIM reconstruction."""
+    """Main class for SIM reconstruction.
 
-    def __init__(self, image: np.ndarray, config: str = "") -> None:
-        nz, ny, nx = image.shape
-        self.image = image
+
+    Parameters
+    ----------
+    arg0 : Union[np.ndarray, Tuple[int, int, int]]
+        Either a numpy array of raw data, or a shape tuple (3 integers) that indicate
+        the size of raw data (to be provided later with `set_raw`).
+    config : str, optional
+        config file path, by default ""
+
+    Raises
+    ------
+    ValueError
+        If the array is not ndim==3 or shape is not a 3-tuple
+    """
+
+    def __init__(
+        self, arg0: Union[np.ndarray, Tuple[int, int, int]], config: str = ""
+    ) -> None:
+
+        if isinstance(arg0, np.ndarray):
+            if not arg0.ndim == 3:
+                raise ValueError("array must have 3 dimensions")
+            image = arg0
+            self.shape = image.shape
+        elif isinstance(arg0, (list, tuple)):
+            if not len(arg0) == 3:
+                raise ValueError("shape argument must have length 3")
+            image = None
+            self.shape = arg0
+        nz, ny, nx = self.shape
         self.obj = SR_new(nx, ny, nz, config.encode())
-        self.set_raw(image)
-        self.get_result()
+        if image is not None:
+            self.set_raw(image)
 
     def set_raw(self, array: np.ndarray) -> None:
         nz, ny, nx = array.shape
         SR_setRaw(self.obj, array, nx, ny, nz)
 
     def get_result(self):
-        *_, ny, nx = self.image.shape
-        nz = 9
-        _result = np.empty((nz, ny * 2, nx * 2), dtype=np.float32)
+        *_, ny, nx = self.shape
+        rp = self.get_recon_params()
+        nz = int(self.get_image_params().nz * rp.z_zoom)
+        out_shape = (nz, int(ny * rp.zoomfact), int(nx * rp.zoomfact))
+        _result = np.empty(out_shape, np.float32)
         SR_getResult(self.obj, _result)
         return _result
 
@@ -50,4 +80,5 @@ if __name__ == "__main__":
     img = tf.imread(str(BASE / "test_data/raw.tif"))
     print("img: ", img.shape, img.dtype)
     sr = SIMReconstructor(img, CONFIG)
+    sr.get_result()
     print(sr.get_recon_params())
