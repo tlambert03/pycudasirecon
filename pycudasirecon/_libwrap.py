@@ -12,13 +12,28 @@ except FileNotFoundError:
 
 
 @lib.function
-def SR_new(nx: int, ny: int, nImages: int, configFileName: str) -> CPointer:
+def SR_new_from_shape(nx: int, ny: int, nImages: int, configFileName: str) -> CPointer:
     """Create new SIM_Reconstructor."""
 
 
 @lib.function
 def SR_setRaw(self: CPointer, raw_data: np.ndarray, nx: int, ny: int, nz: int) -> None:
     """Set raw data to reconstruct."""
+
+
+@lib.function
+def SR_loadAndRescaleImage(self: CPointer, it: int, iw: int) -> None:
+    ...
+
+
+@lib.function
+def SR_setCurTimeIdx(self: CPointer, it: int) -> None:
+    ...
+
+
+@lib.function
+def SR_processOneVolume(self: CPointer) -> None:
+    ...
 
 
 @lib.function
@@ -34,6 +49,27 @@ def SR_getReconParams(self: CPointer) -> CPointer:
 @lib.function
 def SR_getImageParams(self: CPointer) -> CPointer:
     """Get current image parameters."""
+
+
+# TODO
+# @lib.function
+# def SR_new_from_argv(argc: int, argv: List[str]) -> CPointer:
+#     """Create new SIM_Reconstructor."""
+
+
+@lib.function
+def SR_setFile(self: CPointer, it: int, iw: int) -> None:
+    ...
+
+
+@lib.function
+def SR_writeResult(self: CPointer, it: int, iw: int) -> None:
+    ...
+
+
+@lib.function
+def SR_closeFiles(self: CPointer) -> None:
+    ...
 
 
 class ReconParams(Structure):

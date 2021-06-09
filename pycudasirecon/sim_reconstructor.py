@@ -1,4 +1,5 @@
 from typing import Tuple, Union
+
 import numpy as np
 
 from ._libwrap import (
@@ -7,8 +8,11 @@ from ._libwrap import (
     SR_getImageParams,
     SR_getReconParams,
     SR_getResult,
-    SR_new,
+    SR_loadAndRescaleImage,
+    SR_new_from_shape,
+    SR_setCurTimeIdx,
     SR_setRaw,
+    SR_processOneVolume,
 )
 
 
@@ -45,13 +49,20 @@ class SIMReconstructor:
             image = None
             self.shape = arg0
         nz, ny, nx = self.shape
-        self.obj = SR_new(nx, ny, nz, config.encode())
+        self._ptr = SR_new_from_shape(nx, ny, nz, config.encode())
+
         if image is not None:
             self.set_raw(image)
+            self.process_volume()
+
+    def process_volume(self):
+        SR_processOneVolume(self._ptr)
 
     def set_raw(self, array: np.ndarray) -> None:
         nz, ny, nx = array.shape
-        SR_setRaw(self.obj, array, nx, ny, nz)
+        SR_setRaw(self._ptr, array, nx, ny, nz)
+        SR_loadAndRescaleImage(self._ptr, 0, 0)
+        SR_setCurTimeIdx(self._ptr, 0)
 
     def get_result(self):
         *_, ny, nx = self.shape
@@ -59,14 +70,14 @@ class SIMReconstructor:
         nz = int(self.get_image_params().nz * rp.z_zoom)
         out_shape = (nz, int(ny * rp.zoomfact), int(nx * rp.zoomfact))
         _result = np.empty(out_shape, np.float32)
-        SR_getResult(self.obj, _result)
+        SR_getResult(self._ptr, _result)
         return _result
 
     def get_recon_params(self) -> ReconParams:
-        return ReconParams.from_address(SR_getReconParams(self.obj))
+        return ReconParams.from_address(SR_getReconParams(self._ptr))
 
     def get_image_params(self) -> ImageParams:
-        return ImageParams.from_address(SR_getImageParams(self.obj))
+        return ImageParams.from_address(SR_getImageParams(self._ptr))
 
 
 if __name__ == "__main__":
@@ -74,10 +85,10 @@ if __name__ == "__main__":
 
     import tifffile as tf
 
-    BASE = Path("/home/tjl10/dev/cudasirecon")
-    CONFIG = str(BASE / "test_data/config-tiff")
+    ROOT = Path(__file__).parent.parent
+    CONFIG = str(ROOT / "tests/data/config")
 
-    img = tf.imread(str(BASE / "test_data/raw.tif"))
+    img = tf.imread(str(ROOT / "tests/data/raw.tif"))
     print("img: ", img.shape, img.dtype)
     sr = SIMReconstructor(img, CONFIG)
     sr.get_result()
