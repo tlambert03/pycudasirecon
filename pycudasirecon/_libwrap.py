@@ -3,10 +3,10 @@ import numpy as np
 from ctypes import c_short, c_ushort, c_int, c_float, c_long, c_uint, c_bool, Structure
 
 try:
-    lib = Library("libpycudasirecon")
+    lib = Library("libcudasirecon")
 except FileNotFoundError:
     raise FileNotFoundError(
-        "Unable to find library 'libpycudasirecon'\n"
+        "Unable to find library 'libcudasirecon'\n"
         "Please try `conda install -c conda-forge cudasirecon`."
     ) from None
 
