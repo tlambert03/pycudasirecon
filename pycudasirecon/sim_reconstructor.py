@@ -19,7 +19,6 @@ from ._libwrap import (
 class SIMReconstructor:
     """Main class for SIM reconstruction.
 
-
     Parameters
     ----------
     arg0 : Union[np.ndarray, Tuple[int, int, int]]
