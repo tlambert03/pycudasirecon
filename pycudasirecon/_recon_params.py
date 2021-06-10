@@ -3,8 +3,10 @@ from typing import Sequence, Optional
 
 
 class ReconParams(BaseModel):
-    otf_file: FilePath = Field(description="OTF file")
-    usecorr: str = Field(description="use the flat-field correction file provided")
+    otf_file: Optional[FilePath] = Field(None, description="OTF file")
+    usecorr: bool = Field(
+        False, description="use the flat-field correction file provided"
+    )
     ndirs: int = Field(default=3, description="number of directions")
     nphases: int = Field(default=5, description="number of phases per direction")
     nordersout: int = Field(
@@ -87,13 +89,12 @@ class ReconParams(BaseModel):
         description="Write command line to image header (may cause issues with bioformats)",
     )
 
-    # twolenses: bool = Field(False, description="I5S data")
-    # saveprefiltered: str = Field(
-    #     description="save separated bands (half Fourier space) into a file and exit"
-    # )
-    # savealignedraw: str = Field(
-    #     description="save drift-fixed raw data (half Fourier space) into a file and exit"
-    # )
-    # saveoverlaps: str = Field(
-    #     description="save overlap0 and overlap1 (real-space complex data) into a file and exit"
-    # )
+    def to_config(self, exclude_unset=True):
+        lines = []
+        for k, v in self.dict(exclude_unset=exclude_unset).items():
+            if k == "k0angles":
+                v = ",".join(str(x) for x in v)
+            if isinstance(v, bool):
+                v = int(v)
+            lines.append(f'{k.replace("_", "-")}={v}')
+        return "\n".join(lines)

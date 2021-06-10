@@ -45,7 +45,7 @@ jobs:
 
   #     - name: Install
   #       run: |
-  #         mamba install cudadecon>=0.0.11 pytest
+  #         mamba install cudasirecon>=0.0.11 pytest
   #         pip install -e .
 
   #     - name: Test
@@ -57,7 +57,7 @@ jobs:
   deploy:
     # needs: test
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'tlambert03/pycudadecon' && contains(github.ref, 'tags') }}
+    if: ${{ github.repository == 'tlambert03/pycudasirecon' && contains(github.ref, 'tags') }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python

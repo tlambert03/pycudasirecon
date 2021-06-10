@@ -1,19 +1,43 @@
-from typing import Tuple, Union
+import os
+from contextlib import contextmanager
+from tempfile import NamedTemporaryFile
+from typing import Optional, Tuple, Union
 
 import numpy as np
 
+from ._libwrap import ImageParams as SR_ImageParams
+from ._libwrap import ReconParams as SR_ReconParams
 from ._libwrap import (
-    ImageParams,
-    ReconParams,
     SR_getImageParams,
     SR_getReconParams,
     SR_getResult,
     SR_loadAndRescaleImage,
     SR_new_from_shape,
+    SR_processOneVolume,
     SR_setCurTimeIdx,
     SR_setRaw,
-    SR_processOneVolume,
 )
+from ._recon_params import ReconParams
+from ._util import caplog
+
+
+@contextmanager
+def temp_config(**kwargs):
+    params = ReconParams(**kwargs)
+    tf = NamedTemporaryFile(delete=False)
+    tf.file.write(params.to_config().encode())
+    tf.close()
+    try:
+        yield tf
+    finally:
+        os.unlink(tf.name)
+
+
+def reconstruct(
+    array, psf: Optional[np.ndarray] = None, otf_file: str = None, **kwargs
+) -> np.ndarray:
+    with temp_config(otf_file=otf_file, **kwargs) as cfg:
+        return SIMReconstructor(array, cfg.name).get_result()
 
 
 class SIMReconstructor:
@@ -25,7 +49,10 @@ class SIMReconstructor:
         Either a numpy array of raw data, or a shape tuple (3 integers) that indicate
         the size of raw data (to be provided later with `set_raw`).
     config : str, optional
-        config file path, by default ""
+        Config file path (overrides kwargs), by default None
+    **kwargs
+        valid ReconParams Fields
+
 
     Raises
     ------
@@ -34,7 +61,10 @@ class SIMReconstructor:
     """
 
     def __init__(
-        self, arg0: Union[np.ndarray, Tuple[int, int, int]], config: str = ""
+        self,
+        arg0: Union[np.ndarray, Tuple[int, int, int]],
+        config: Optional[str] = None,
+        **kwargs
     ) -> None:
 
         if isinstance(arg0, np.ndarray):
@@ -48,22 +78,27 @@ class SIMReconstructor:
             image = None
             self.shape = arg0
         nz, ny, nx = self.shape
-        self._ptr = SR_new_from_shape(nx, ny, nz, config.encode())
+        with caplog():
+            self._ptr = SR_new_from_shape(nx, ny, nz, config.encode())
 
         if image is not None:
             self.set_raw(image)
             self.process_volume()
 
     def process_volume(self):
-        SR_processOneVolume(self._ptr)
+        with caplog():
+            SR_processOneVolume(self._ptr)
 
-    def set_raw(self, array: np.ndarray) -> None:
-        nz, ny, nx = array.shape
-        SR_setRaw(self._ptr, array, nx, ny, nz)
-        SR_loadAndRescaleImage(self._ptr, 0, 0)
-        SR_setCurTimeIdx(self._ptr, 0)
+    def set_raw(self, img: np.ndarray) -> None:
+        nz, ny, nx = img.shape
+        if not np.issubdtype(img.dtype, np.float32) or not img.flags["C_CONTIGUOUS"]:
+            img = np.ascontiguousarray(img, dtype=np.float32)
+        with caplog():
+            SR_setRaw(self._ptr, img, nx, ny, nz)
+            SR_loadAndRescaleImage(self._ptr, 0, 0)
+            SR_setCurTimeIdx(self._ptr, 0)
 
-    def get_result(self):
+    def get_result(self) -> np.ndarray:
         *_, ny, nx = self.shape
         rp = self.get_recon_params()
         nz = int(self.get_image_params().nz * rp.z_zoom)
@@ -72,11 +107,13 @@ class SIMReconstructor:
         SR_getResult(self._ptr, _result)
         return _result
 
-    def get_recon_params(self) -> ReconParams:
-        return ReconParams.from_address(SR_getReconParams(self._ptr))
+    def get_recon_params(self) -> SR_ReconParams:
+        return SR_ReconParams.from_address(SR_getReconParams(self._ptr))
 
-    def get_image_params(self) -> ImageParams:
-        return ImageParams.from_address(SR_getImageParams(self._ptr))
+    def get_image_params(self) -> SR_ImageParams:
+        return SR_ImageParams.from_address(SR_getImageParams(self._ptr))
+
+
 
 
 if __name__ == "__main__":
@@ -86,9 +123,10 @@ if __name__ == "__main__":
 
     ROOT = Path(__file__).parent.parent
     CONFIG = str(ROOT / "tests/data/config")
+    RAW = str(ROOT / "tests/data/raw.tif")
 
-    img = tf.imread(str(ROOT / "tests/data/raw.tif"))
-    print("img: ", img.shape, img.dtype)
-    sr = SIMReconstructor(img, CONFIG)
-    sr.get_result()
-    print(sr.get_recon_params())
+    raw = tf.imread(RAW)
+    sr = SIMReconstructor(raw, CONFIG)
+    result = sr.get_result()
+    assert np.allclose(result, tf.imread(ROOT / "tests/data/expected.tif"))
+    tf.imsave("out.tif", result, imagej=True)
