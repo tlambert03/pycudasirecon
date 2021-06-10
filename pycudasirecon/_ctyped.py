@@ -4,10 +4,10 @@ import os
 import sys
 from ctypes.util import find_library
 from inspect import Parameter, signature
-from typing import Callable, Optional, Type, NewType
-from typing_extensions import Annotated
+from typing import Callable, NewType, Optional, Type
 
 import numpy as np
+from typing_extensions import Annotated
 
 ndarray_uint16 = Annotated[np.ndarray, "uint16"]
 CPointer = NewType("CPointer", int)

@@ -1,5 +1,6 @@
-from pydantic import BaseModel, FilePath, Field
-from typing import Sequence, Optional
+from typing import Optional, Sequence
+
+from pydantic import BaseModel, Field, FilePath
 
 
 class ReconParams(BaseModel):
@@ -86,7 +87,8 @@ class ReconParams(BaseModel):
     wavelength: int = Field(530, description="emission wavelength in nanometers")
     writeTitle: bool = Field(
         False,
-        description="Write command line to image header (may cause issues with bioformats)",
+        description="Write command line to image header "
+        "(may cause issues with bioformats)",
     )
 
     def to_config(self, exclude_unset=True):

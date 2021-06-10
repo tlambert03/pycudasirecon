@@ -1,6 +1,8 @@
-from ._ctyped import Library, CPointer
+from ctypes import Structure, c_bool, c_float, c_int, c_long, c_short, c_uint, c_ushort
+
 import numpy as np
-from ctypes import c_short, c_ushort, c_int, c_float, c_long, c_uint, c_bool, Structure
+
+from ._ctyped import CPointer, Library
 
 try:
     lib = Library("libcudasirecon")

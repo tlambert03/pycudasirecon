@@ -2,3 +2,5 @@
 __pycache__
 *.pyc
 .cenv
+.mypy_cache
+.vscode

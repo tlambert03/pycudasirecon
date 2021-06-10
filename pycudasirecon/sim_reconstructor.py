@@ -25,7 +25,7 @@ from ._util import caplog
 def temp_config(**kwargs):
     params = ReconParams(**kwargs)
     tf = NamedTemporaryFile(delete=False)
-    tf.file.write(params.to_config().encode())
+    tf.file.write(params.to_config().encode())  # type: ignore
     tf.close()
     try:
         yield tf
@@ -63,10 +63,9 @@ class SIMReconstructor:
     def __init__(
         self,
         arg0: Union[np.ndarray, Tuple[int, int, int]],
-        config: Optional[str] = None,
-        **kwargs
+        config: str,
     ) -> None:
-
+        image: Optional[np.ndarray]
         if isinstance(arg0, np.ndarray):
             if not arg0.ndim == 3:
                 raise ValueError("array must have 3 dimensions")
@@ -112,8 +111,6 @@ class SIMReconstructor:
 
     def get_image_params(self) -> SR_ImageParams:
         return SR_ImageParams.from_address(SR_getImageParams(self._ptr))
-
-
 
 
 if __name__ == "__main__":
