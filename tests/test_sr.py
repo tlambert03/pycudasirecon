@@ -8,13 +8,18 @@ import tifffile as tf
 from pycudasirecon import ReconParams, make_otf, reconstruct, sim_reconstructor
 from pycudasirecon._otf import temporary_otf
 
-DATA = Path(__file__).parent / "data"
+try:
+    DATA = Path(__file__).parent / "data"
+except NameError:
+    DATA = Path('tests') / "data"
+
 OTF = DATA / "otf.tif"
 PSF = DATA / "psf.tif"
 RAW = DATA / "raw.tif"
 CONFIG = DATA / "config"
 EXPECTED = DATA / "expected.tif"
 
+ATOL = 0.3
 
 @pytest.fixture(autouse=True)
 def nocap(monkeypatch):
@@ -45,7 +50,7 @@ def params():
 def test_reconstruct(params):
     raw = tf.imread(RAW)
     result = reconstruct(raw, otf_file=OTF, **params.dict(exclude_unset=True))
-    assert np.allclose(tf.imread(EXPECTED), result)
+    assert np.allclose(tf.imread(EXPECTED), result, atol=ATOL)
 
 
 def test_reconstruct_with_file_psf(params):
@@ -55,7 +60,7 @@ def test_reconstruct_with_file_psf(params):
         makeotf_kwargs=dict(fixorigin=(3, 20)),
         **params.dict(exclude_unset=True)
     )
-    assert np.allclose(tf.imread(EXPECTED), result)
+    assert np.allclose(tf.imread(EXPECTED), result, atol=ATOL)
 
 
 def test_reconstruct_with_array_psf(params):
@@ -65,7 +70,7 @@ def test_reconstruct_with_array_psf(params):
         makeotf_kwargs=dict(fixorigin=(3, 20)),
         **params.dict(exclude_unset=True)
     )
-    assert np.allclose(tf.imread(EXPECTED), result)
+    assert np.allclose(tf.imread(EXPECTED), result, atol=ATOL)
 
 
 def test_make_otf_from_file(tmp_path):

@@ -6,8 +6,20 @@ import tempfile
 from contextlib import contextmanager
 from functools import partial
 
-libc = ctypes.CDLL(None)
-c_stdout = ctypes.c_void_p.in_dll(libc, "stdout")
+WIN = os.name == 'nt'
+if WIN:
+    libc = ctypes.cdll.msvcrt
+
+    kernel32 = ctypes.WinDLL('kernel32')
+    STD_OUTPUT_HANDLE = -11
+    hStandardOutput = kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+    c_stdout = None
+else:
+    libc = ctypes.CDLL(None)
+    c_stdout = ctypes.c_void_p.in_dll(libc, "stdout")
+    # sidenote: on mac this would be:
+    # c_stdout = ctypes.c_void_p.in_dll(libc, "__stdoutp")
+
 
 
 @contextmanager
@@ -23,6 +35,9 @@ def stdout_redirected(stream=os.devnull):
         sys.stdout.close()
         # Make original_stdout_fd point to the same file as to_fd
         os.dup2(to_fd, original_stdout_fd)
+        if WIN:
+            kernel32.SetStdHandle(STD_OUTPUT_HANDLE, libc._get_osfhandle(to_fd))
+
         # Create a new sys.stdout that points to the redirected fd
         sys.stdout = io.TextIOWrapper(os.fdopen(original_stdout_fd, "wb"))
 

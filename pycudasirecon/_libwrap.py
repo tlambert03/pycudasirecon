@@ -1,4 +1,13 @@
-from ctypes import Structure, c_bool, c_float, c_int, c_long, c_short, c_uint, c_ushort
+from ctypes import (
+    Structure,
+    c_bool,
+    c_float,
+    c_int,
+    c_short,
+    c_uint,
+    c_ushort,
+    c_longlong,
+)
 
 import numpy as np
 
@@ -84,7 +93,7 @@ class ReconParams(Structure):
         ("nphases", c_int),
         ("norders_output", c_int),
         ("norders", c_int),
-        ("phaseSteps", c_long),
+        ("phaseSteps", c_longlong),
         ("bTwolens", c_int),
         ("bFastSIM", c_int),
         ("bBessel", c_int),

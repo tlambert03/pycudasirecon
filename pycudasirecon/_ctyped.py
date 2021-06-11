@@ -53,6 +53,8 @@ class Library:
             if not _file or not os.path.exists(_file):
                 _file = find_library(name)  # type: ignore
 
+        if not _file:
+            raise FileNotFoundError(f"Unable to find library: {self.name}")
         self.lib = ctypes.CDLL(_file)
         if not self.lib._name:
             raise FileNotFoundError(f"Unable to find library: {self.name}")

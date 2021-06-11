@@ -5,10 +5,13 @@ from typing import Optional, Tuple, Union
 
 import numpy as np
 
-from . import _libwrap as _lib
+from ._lib import lib
 from ._otf import PathLike, temporary_otf
 from ._recon_params import temp_config
-from ._util import caplog
+
+# TODO: make sure that caplog works on ipython and windows
+# before using it
+caplog = nullcontext
 
 
 def reconstruct(
@@ -96,7 +99,7 @@ class SIMReconstructor:
             self.shape = arg0
         nz, ny, nx = self.shape
         with caplog():
-            self._ptr = _lib.SR_new_from_shape(nx, ny, nz, config.encode())
+            self._ptr = lib.SR_new_from_shape(nx, ny, nz, config.encode())
 
         if image is not None:
             self.set_raw(image)
@@ -104,16 +107,16 @@ class SIMReconstructor:
 
     def process_volume(self):
         with caplog():
-            _lib.SR_processOneVolume(self._ptr)
+            lib.SR_processOneVolume(self._ptr)
 
     def set_raw(self, img: np.ndarray) -> None:
         nz, ny, nx = img.shape
         if not np.issubdtype(img.dtype, np.float32) or not img.flags["C_CONTIGUOUS"]:
             img = np.ascontiguousarray(img, dtype=np.float32)
         with caplog():
-            _lib.SR_setRaw(self._ptr, img, nx, ny, nz)
-            _lib.SR_loadAndRescaleImage(self._ptr, 0, 0)
-            _lib.SR_setCurTimeIdx(self._ptr, 0)
+            lib.SR_setRaw(self._ptr, img, nx, ny, nz)
+            lib.SR_loadAndRescaleImage(self._ptr, 0, 0)
+            lib.SR_setCurTimeIdx(self._ptr, 0)
 
     def get_result(self) -> np.ndarray:
         *_, ny, nx = self.shape
@@ -121,11 +124,11 @@ class SIMReconstructor:
         nz = int(self.get_image_params().nz * rp.z_zoom)
         out_shape = (nz, int(ny * rp.zoomfact), int(nx * rp.zoomfact))
         _result = np.empty(out_shape, np.float32)
-        _lib.SR_getResult(self._ptr, _result)
+        lib.SR_getResult(self._ptr, _result)
         return _result
 
-    def get_recon_params(self) -> _lib.ReconParams:
-        return _lib.ReconParams.from_address(_lib.SR_getReconParams(self._ptr))
+    def get_recon_params(self) -> lib.ReconParams:
+        return lib.ReconParams.from_address(lib.SR_getReconParams(self._ptr))
 
-    def get_image_params(self) -> _lib.ImageParams:
-        return _lib.ImageParams.from_address(_lib.SR_getImageParams(self._ptr))
+    def get_image_params(self) -> lib.ImageParams:
+        return lib.ImageParams.from_address(lib.SR_getImageParams(self._ptr))

@@ -1,0 +1,11 @@
+name: pycudasim
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - tifffile
+  - typing_extensions
+  - pydantic
+  - cudasirecon
+  - cupy

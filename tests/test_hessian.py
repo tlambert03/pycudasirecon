@@ -13,4 +13,4 @@ HESS_RESULT = DATA / "hess9.tif"
 def test_hessian():
     im = tifffile.imread(WEINER_RESULT)
     out = hessian_denoise(im)
-    assert np.allclose(out[9], tifffile.imread(HESS_RESULT))
+    assert np.allclose(out[9], tifffile.imread(HESS_RESULT), atol=.3)
