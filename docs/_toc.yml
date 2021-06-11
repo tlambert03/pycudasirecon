@@ -1,11 +1,10 @@
-# Table of content
-# Learn more at https://jupyterbook.org/customize/toc.html
-#
-- file: index
+format: jb-article
+root: index
+sections:
 - file: installation
 - file: sim
 - file: otf
 - file: parameters
 - file: hessian
-- title: Source Code
-  url: https://github.com/tlambert03/pycudasirecon
+- url: https://github.com/tlambert03/pycudasirecon
+  title: Source Code
