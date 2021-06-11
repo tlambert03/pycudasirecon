@@ -58,7 +58,7 @@ setup.
 ## Quickstart
 
 If you have a raw SIM image volume and a PSF and you just want to get started, check
-out the {func}`pycudasirecon.reconstruct` function, which should be able to handle most
+out the `pycudasirecon.reconstruct` function, which should be able to handle most
 basic applications.
 
 ```python
