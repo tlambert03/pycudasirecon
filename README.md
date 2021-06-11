@@ -28,7 +28,7 @@ conda install -c conda-forge pycudasirecon
 
 ### GPU requirements
 
-This software requires a CUDA-compatible NVIDIA GPU. The underlying cudadecon
+This software requires a CUDA-compatible NVIDIA GPU. The underlying cudasirecon
 libraries have been compiled against different versions of the CUDA toolkit.
 The required CUDA libraries are bundled in the conda distributions so you don't
 need to install the CUDA toolkit separately.  If desired, you can pick which
@@ -39,7 +39,7 @@ To specify a specific cudatoolkit version, install as follows (for instance, to
 use `cudatoolkit=10.2`)
 
 ```sh
-conda install -c conda-forge cudadecon cudatoolkit=10.2
+conda install -c conda-forge cudasirecon cudatoolkit=10.2
 ```
 
 | CUDA | Linux driver | Win driver |
