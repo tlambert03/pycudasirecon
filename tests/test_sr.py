@@ -1,4 +1,5 @@
 import contextlib
+import os
 from pathlib import Path
 
 import numpy as np
@@ -11,7 +12,7 @@ from pycudasirecon._otf import temporary_otf
 try:
     DATA = Path(__file__).parent / "data"
 except NameError:
-    DATA = Path('tests') / "data"
+    DATA = Path("tests") / "data"
 
 OTF = DATA / "otf.tif"
 PSF = DATA / "psf.tif"
@@ -19,7 +20,8 @@ RAW = DATA / "raw.tif"
 CONFIG = DATA / "config"
 EXPECTED = DATA / "expected.tif"
 
-ATOL = 0.3
+ATOL = 0.3 if os.name == "nt" else 1e-08
+
 
 @pytest.fixture(autouse=True)
 def nocap(monkeypatch):

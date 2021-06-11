@@ -6,11 +6,11 @@ import tempfile
 from contextlib import contextmanager
 from functools import partial
 
-WIN = os.name == 'nt'
+WIN = os.name == "nt"
 if WIN:
     libc = ctypes.cdll.msvcrt
 
-    kernel32 = ctypes.WinDLL('kernel32')
+    kernel32 = ctypes.WinDLL("kernel32")  # type: ignore
     STD_OUTPUT_HANDLE = -11
     hStandardOutput = kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
     c_stdout = None
@@ -19,7 +19,6 @@ else:
     c_stdout = ctypes.c_void_p.in_dll(libc, "stdout")
     # sidenote: on mac this would be:
     # c_stdout = ctypes.c_void_p.in_dll(libc, "__stdoutp")
-
 
 
 @contextmanager
