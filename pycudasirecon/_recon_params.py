@@ -1,6 +1,26 @@
+import os
+from contextlib import contextmanager
+from tempfile import NamedTemporaryFile
 from typing import Optional, Sequence
 
 from pydantic import BaseModel, Field, FilePath
+
+
+@contextmanager
+def temp_config(**kwargs):
+    """A context manager that creates a temporary config file for SIMReconstructor.
+
+    `**kwargs` should be valid keyword arguments for :class:`ReconParams`.
+    """
+
+    params = ReconParams(**kwargs)
+    tf = NamedTemporaryFile(delete=False)
+    tf.file.write(params.to_config().encode())  # type: ignore
+    tf.close()
+    try:
+        yield tf
+    finally:
+        os.unlink(tf.name)
 
 
 class ReconParams(BaseModel):
