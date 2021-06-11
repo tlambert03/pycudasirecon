@@ -4,7 +4,6 @@ import numpy as np
 
 try:
     import cupy
-
 except ImportError:
     cupy = None
 
