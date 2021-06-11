@@ -44,5 +44,4 @@ def test_reconstruct(params):
     raw = tf.imread(RAW)
     expected = tf.imread(EXPECTED)
     result = reconstruct(raw, otf_file=str(OTF), **params.dict(exclude_unset=True))
-    tf.imsave("out.tif", result, imagej=True)
     assert np.allclose(expected, result)
