@@ -4,3 +4,4 @@ __pycache__
 .cenv
 .mypy_cache
 .vscode
+docs/_build/

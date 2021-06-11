@@ -1,0 +1,6 @@
+jupyter-book
+ghp-import
+sphinx-autodoc-typehints
+furo
+sphinx-jsonschema==1.15
+sphinx-pydantic

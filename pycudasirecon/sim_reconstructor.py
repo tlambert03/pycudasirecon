@@ -73,7 +73,8 @@ class SIMReconstructor:
         Either a numpy array of raw data, or a shape tuple (3 integers) that indicate
         the size of raw data (to be provided later with `set_raw`).
     config : str, optional
-        Config file path (overrides kwargs), by default None
+        Config file path.  Currently, the config file *must* include the otf-file key.
+        by default None
 
     Raises
     ------
@@ -88,12 +89,12 @@ class SIMReconstructor:
     ) -> None:
         image: Optional[np.ndarray]
         if isinstance(arg0, np.ndarray):
-            if not arg0.ndim == 3:
+            if arg0.ndim != 3:
                 raise ValueError("array must have 3 dimensions")
             image = arg0
             self.shape = image.shape
         elif isinstance(arg0, (list, tuple)):
-            if not len(arg0) == 3:
+            if len(arg0) != 3:
                 raise ValueError("shape argument must have length 3")
             image = None
             self.shape = arg0
@@ -127,8 +128,10 @@ class SIMReconstructor:
         lib.SR_getResult(self._ptr, _result)
         return _result
 
-    def get_recon_params(self) -> lib.ReconParams:
+    # TODO: can't add type hints here yet since build-docs will try to resolve them
+    # and that requires the lib still.
+    def get_recon_params(self):
         return lib.ReconParams.from_address(lib.SR_getReconParams(self._ptr))
 
-    def get_image_params(self) -> lib.ImageParams:
+    def get_image_params(self):
         return lib.ImageParams.from_address(lib.SR_getImageParams(self._ptr))
