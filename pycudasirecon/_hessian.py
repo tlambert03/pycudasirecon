@@ -1,57 +1,63 @@
+import warnings
+
+import numpy as np
+
 try:
-    import cupy as xp
+    import cupy
+
 except ImportError:
-    print("could not import cupy, falling back to numpy & cpu")
-    import numpy as xp
+    cupy = None
+
+xp = np if cupy is None else cupy
 
 
-def forward_diff(data, dim):
-    return xp.diff(data, axis=dim, append=0)
+def hessian_denoise(initial: np.ndarray, iters=50, mu=150, sigma: float = 1, lamda=1):
+    """Hessian (Split-Bregman) SIM denoise algorithm.
 
+    May be applied to images images reconstructed with Wiener method to further
+    reduce noise.
 
-def back_diff(data, dim):
-    return xp.diff(data, axis=dim, prepend=0)
+    Adapted from MATLAB code published in Huang et al 2018 [1]_.
+    See supplementary information (fig 7) for details on the paramaeters.
 
+    Parameters
+    ----------
+    initial : np.ndarray
+        input image
+    iters : int, optional
+        number of iterations, by default 50
+    mu : int, optional
+        tradeoff between resolution and denoising. Higher values result in increased
+        resolution but increased noise, by default 150
+    sigma : float, optional
+        When structures change slowly along the Z/T axis, use a value between
+        0 and 1 to obtain trade-off between effective denoising and minimal temporal
+        blurring. Set to zero to turn off regularization along the Z/T axis.
+        by default 1
+    lamda : int, optional
+        [description], by default 1
 
-def _fft_of_diff(sizex, sigma, mu, lamda):
+    Returns
+    -------
+    result: np.ndarray
+        denoised image
 
-    # FFTs of difference operator
-    _v = xp.array([1, -2, 1])
-    tmp_fft = xp.fft.fftn(_v[xp.newaxis, xp.newaxis, :], sizex)
-    tmp_fft *= xp.conj(tmp_fft)
-    divide = tmp_fft
+    References
+    ----------
 
-    tmp_fft = xp.fft.fftn(_v[xp.newaxis, :, xp.newaxis], sizex)
-    tmp_fft *= xp.conj(tmp_fft)
-    divide += tmp_fft
+    .. [1] Huang, X., Fan, J., Li, L. et al. Fast, long-term, super-resolution imaging
+           with Hessian structured illumination microscopy. Nat Biotechnol 36, 451–459
+           (2018). https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/nbt.4115
 
-    tmp_fft = xp.fft.fftn(_v[:, xp.newaxis, xp.newaxis], sizex)
-    tmp_fft *= xp.conj(tmp_fft)
-    divide += (sigma ** 2) * tmp_fft
+    """
+    if xp is not cupy:
+        warnings.warn("could not import cupy... falling back to numpy & cpu.")
 
-    _v = xp.array([[1, -1], [-1, 1]])
-    tmp_fft = xp.fft.fftn(_v[xp.newaxis, :, :], sizex)
-    tmp_fft *= xp.conj(tmp_fft)
-    divide += 2 * tmp_fft
-
-    tmp_fft = xp.fft.fftn(_v[:, xp.newaxis, :], sizex)
-    tmp_fft *= xp.conj(tmp_fft)
-    divide += 2 * sigma * tmp_fft
-
-    tmp_fft = xp.fft.fftn(_v[:, :, xp.newaxis], sizex)
-    tmp_fft *= xp.conj(tmp_fft)
-    divide += 2 * sigma * tmp_fft
-    divide = (divide.real + mu / lamda).astype(xp.float32)
-
-    return divide
-
-
-def hessian(initial, iters=50, sigma=1, mu=150, lamda=1):
-    initial = xp.asarray(initial, dtype="float32")
+    initial = xp.asarray(initial, dtype="single")
 
     if initial.ndim == 2 or initial.shape[0] < 3:
         sigma = 0
-        print(
+        warnings.warn(
             "Number of Z/T planes is smaller than 3, the t and z-axis of "
             "Hessian was turned off(sigma=0)"
         )
@@ -63,100 +69,82 @@ def hessian(initial, iters=50, sigma=1, mu=150, lamda=1):
             elif initial.shape[0] == 2:
                 initial = xp.concatenate([initial, xp.expand_dims(initial[-1], 0)], 0)
 
+    _mu_d_lamda = mu / lamda
     ymax = initial.max()
-    initial = initial / ymax
+    initial /= ymax
     sizex = initial.shape
 
-    divide = _fft_of_diff(sizex, sigma, mu, lamda)
+    divide = (_fft_of_diff(sizex, sigma) + _mu_d_lamda).astype(xp.float32)
 
-    # # #############
-    # b1 = xp.zeros(sizex, "float32")
-    # b2 = xp.zeros(sizex, "float32")
-    # b3 = xp.zeros(sizex, "float32")
-    # b4 = xp.zeros(sizex, "float32")
-    # b5 = xp.zeros(sizex, "float32")
-    # b6 = xp.zeros(sizex, "float32")
-
-    bs = [xp.zeros(sizex, "float32") for _ in range(6)]
-
+    bs = xp.zeros((6,) + sizex, "float32")
     x = xp.zeros(sizex, "int32")
-    frac = (mu / lamda) * initial
-
-    pairs = ((1, 1), (2, 2), (0, 0), (1, 2), (1, 0), (2, 0))
+    frac = _mu_d_lamda * initial
 
     for ii in range(iters):
         frac = xp.fft.fftn(frac)
-        print(ii)
-        if ii >= 1:
-            x = xp.real(xp.fft.ifftn(frac / divide))
-        else:
-            x = xp.real(xp.fft.ifftn(frac / (mu / lamda)))
 
-        frac = (mu / lamda) * initial
+        divisor = divide if ii >= 1 else _mu_d_lamda
+        x = xp.fft.ifftn(frac / divisor).real
 
-        for b, (i0, i1) in zip(bs, pairs):
-            frac += _x(b, i0, i1, x, sigma, lamda)
+        frac = _mu_d_lamda * initial
+        frac += _bfbf(bs[0], 1, 1, x, lamda)
+        frac += _bfbf(bs[1], 2, 2, x, lamda)
+        frac += _bfbf(bs[2], 0, 0, x, lamda)
+        frac += _ffbb(bs[3], 1, 2, x, lamda)
+        frac += sigma * _ffbb(bs[4], 1, 0, x, lamda)
+        frac += sigma * _ffbb(bs[5], 2, 0, x, lamda)
 
-        # u = back_diff(forward_diff(x, 1), 1)
-        # signd = abs(u + b1) - 1 / lamda
-        # signd[signd < 0] = 0
-        # signd *= xp.sign(u + b1)
-        # b1 += u - signd
-        # frac += back_diff(forward_diff(signd - b1, 1), 1)
-
-        # u = back_diff(forward_diff(x, 2), 2)
-        # signd = abs(u + b2) - 1 / lamda
-        # signd[signd < 0] = 0
-        # signd *= xp.sign(u + b2)
-        # b2 += u - signd
-        # frac += back_diff(forward_diff(signd - b2, 2), 2)
-
-        # u = back_diff(forward_diff(x, 0), 0)
-        # signd = abs(u + b3) - 1 / lamda
-        # signd[signd < 0] = 0
-        # signd *= xp.sign(u + b3)
-        # b3 += u - signd
-        # frac += (sigma ** 2) * back_diff(forward_diff(signd - b3, 0), 0)
-
-        # u = forward_diff(forward_diff(x, 1), 2)
-        # signd = abs(u + b4) - 1 / lamda
-        # signd[signd < 0] = 0
-        # signd *= xp.sign(u + b4)
-        # b4 += u - signd
-        # frac += 2 * back_diff(back_diff(signd - b4, 2), 1)
-
-        # u = forward_diff(forward_diff(x, 1), 0)
-        # signd = abs(u + b5) - 1 / lamda
-        # signd[signd < 0] = 0
-        # signd *= xp.sign(u + b5)
-        # b5 += u - signd
-        # frac += 2 * sigma * back_diff(back_diff(signd - b5, 0), 1)
-
-        # u = forward_diff(forward_diff(x, 2), 0)
-        # signd = abs(u + b6) - 1 / lamda
-        # signd[signd < 0] = 0
-        # signd *= xp.sign(u + b6)
-        # b6 += u - signd
-        # frac += 2 * sigma * back_diff(back_diff(signd - b6, 0), 2)
-
-    x[x < 0] = 0
+    x.clip(0, out=x)
     if x.shape != initial.shape:
-        x = x[: initial.shape[0], :, :]
-    return x * ymax
+        x = x[: initial.shape[0]]
+    x *= ymax
+
+    return x.get() if hasattr(x, "get") else x
 
 
-def _x(b, i0, i1, x, sigma, lamda):
-    u = forward_diff(forward_diff(x, i0), i1)
-    signd = abs(u + b) - 1 / lamda
-    signd[signd < 0] = 0
-    signd *= xp.sign(u + b)
-    b += u - signd
-    return 2 * sigma * back_diff(back_diff(signd - b, i1), i0)
+def _fft_of_diff(shape, sigma):
+    # FFTs of difference operator
+    _v0 = xp.array([1, -2, 1])
+    _v1 = xp.array([[1, -1], [-1, 1]])
+    divide = (
+        _fconj(_v0.reshape((1, 1, 3)), shape)
+        + _fconj(_v0.reshape((1, 3, 1)), shape)
+        + (sigma ** 2) * _fconj(_v0.reshape((3, 1, 1)), shape)
+        + 2 * _fconj(_v1.reshape((1, 2, 2)), shape)
+        + 2 * sigma * _fconj(_v1.reshape((2, 1, 2)), shape)
+        + 2 * sigma * _fconj(_v1.reshape((2, 2, 1)), shape)
+    )
+    return divide.real
 
-if __name__ == '__main__':
-    import tifffile
-    
-    print("read")
-    im = tifffile.imread('/Users/talley/Desktop/SIMrecon_test_data/5phases-need-deskew/GPUsirecon/sample_scan_488_8ms_zp179um_SIM_5Phase_proc.tif')
-    print("start")
-    print(hessian(im).shape)
+
+def _fconj(array, shape):
+    tmp_fft = xp.fft.fftn(array, shape)
+    return tmp_fft * xp.conj(tmp_fft)
+
+
+def _forward_diff(data, axis):
+    return xp.diff(data, axis=axis, append=0)
+
+
+def _back_diff(data, axis):
+    return xp.diff(data, axis=axis, prepend=0)
+
+
+def _middle(u, b_, lamda):
+    signd = abs(u + b_) - 1 / lamda
+    signd.clip(0, out=signd)
+    signd *= xp.sign(u + b_)
+    b_ += u - signd
+    return signd
+
+
+def _bfbf(b_, c0, c1, x, lamda):
+    u = _back_diff(_forward_diff(x, c0), c1)
+    signd = _middle(u, b_, lamda)
+    return _back_diff(_forward_diff(signd - b_, c1), c0)
+
+
+def _ffbb(b_, c0, c1, x, lamda):
+    u = _forward_diff(_forward_diff(x, c0), c1)
+    signd = _middle(u, b_, lamda)
+    return 2 * _back_diff(_back_diff(signd - b_, c1), c0)
