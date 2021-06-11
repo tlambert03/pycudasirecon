@@ -111,19 +111,3 @@ class SIMReconstructor:
 
     def get_image_params(self) -> SR_ImageParams:
         return SR_ImageParams.from_address(SR_getImageParams(self._ptr))
-
-
-if __name__ == "__main__":
-    from pathlib import Path
-
-    import tifffile as tf
-
-    ROOT = Path(__file__).parent.parent
-    CONFIG = str(ROOT / "tests/data/config")
-    RAW = str(ROOT / "tests/data/raw.tif")
-
-    raw = tf.imread(RAW)
-    sr = SIMReconstructor(raw, CONFIG)
-    result = sr.get_result()
-    assert np.allclose(result, tf.imread(ROOT / "tests/data/expected.tif"))
-    tf.imsave("out.tif", result, imagej=True)
