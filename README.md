@@ -83,6 +83,6 @@ ___
 
 #### References
 
-<sup>1</sup> Gustafsson MG, Shao L, Carlton PM, Wang CJ, Golubovskaya IN, Cande WZ, Agard DA, Sedat JW. Three-dimensional resolution doubling in wide-field fluorescence microscopy by structured illumination. Biophys J. 2008 Jun;94(12):4957-70. doi: 10.1529/biophysj.107.120345. Epub 2008 Mar 7. PMID: 18326650; PMCID: PMC2397368.
+<sup>1</sup> Gustafsson MG, Shao L, Carlton PM, Wang CJ, Golubovskaya IN, Cande WZ, Agard DA, Sedat JW. Three-dimensional resolution doubling in wide-field fluorescence microscopy by structured illumination. Biophys J. 2008 Jun;94(12):4957-70. doi: [10.1529/biophysj.107.120345](https://dx.doi.org/10.1529/biophysj.107.120345). Epub 2008 Mar 7. PMID: 18326650; PMCID: PMC2397368.
 
-<sup>2</sup> Huang X, Fan J, Li L, Liu H, Wu R, Wu Y, Wei L, Mao H, Lal A, Xi P, Tang L, Zhang Y, Liu Y, Tan S, Chen L. Fast, long-term, super-resolution imaging with Hessian structured illumination microscopy. Nat Biotechnol. 2018 Jun;36(5):451-459. doi: 10.1038/nbt.4115. Epub 2018 Apr 11. PMID: 29644998.
+<sup>2</sup> Huang X, Fan J, Li L, Liu H, Wu R, Wu Y, Wei L, Mao H, Lal A, Xi P, Tang L, Zhang Y, Liu Y, Tan S, Chen L. Fast, long-term, super-resolution imaging with Hessian structured illumination microscopy. Nat Biotechnol. 2018 Jun;36(5):451-459. doi: [10.1038/nbt.4115](https://dx.doi.org/10.1038/nbt.4115). Epub 2018 Apr 11. PMID: 29644998.
