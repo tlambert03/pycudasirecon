@@ -220,13 +220,13 @@
 
 <div class="viewcode-block" id="reconstruct"><a class="viewcode-back" href="../../sim.html#pycudasirecon.reconstruct">[docs]</a><span class="k">def</span> <span class="nf">reconstruct</span><span class="p">(</span>
     <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">otf_file</span><span class="p">:</span> <span class="n">PathLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">otf</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">PathLike</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">psf</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">PathLike</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">makeotf_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+    <span class="n">makeotf_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">otf_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PathLike</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Perform SIM reconstruction on array.</span>
-
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -251,17 +251,26 @@
 <span class="sd">    np.ndarray</span>
 <span class="sd">        The reconstructed array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">psf</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">otf_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either `psf` or `otf_file` must be provided.&quot;</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">otf_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">otf</span> <span class="o">=</span> <span class="n">otf_file</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s1">&#39;The &quot;otf_file&quot; argument is deprecated. Use &quot;otf&quot; instead.&#39;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">otf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">psf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Both `otf_file` and `psf` provided, otf_file will be used.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">otf_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided `otf_file` does not exist: </span><span class="si">{</span><span class="n">otf_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">_otf_context</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(</span><span class="n">otf_file</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Both `otf` and `psf` provided, otf will be used.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">otf</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">otf</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided `otf` does not exist: </span><span class="si">{</span><span class="n">otf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_otf_context</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(</span><span class="n">otf</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_otf_context</span> <span class="o">=</span> <span class="n">temporary_otf</span><span class="p">(</span><span class="n">otf</span><span class="o">=</span><span class="n">otf</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">psf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_otf_context</span> <span class="o">=</span> <span class="n">temporary_otf</span><span class="p">(</span><span class="n">psf</span><span class="o">=</span><span class="n">psf</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">makeotf_kwargs</span> <span class="ow">or</span> <span class="p">{}))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_otf_context</span> <span class="o">=</span> <span class="n">temporary_otf</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="o">**</span><span class="n">makeotf_kwargs</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either `psf` or `otf` must be provided.&quot;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">_otf_context</span> <span class="k">as</span> <span class="n">_otf_path</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">temp_config</span><span class="p">(</span><span class="n">otf_file</span><span class="o">=</span><span class="n">_otf_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">:</span>
