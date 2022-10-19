@@ -68,11 +68,11 @@ def make_otf(
         temp_psf.close()
         tifffile.imwrite(temp_psf.name, psf)
         psf_path = temp_psf.name
-    else:
-        if not Path(psf).exists():
-            raise FileNotFoundError(f"Could not find psf at path: {psf}")
+    elif Path(psf).exists():
         psf_path = str(psf)
-
+    else:
+        raise FileNotFoundError(f"Could not find psf at path: {psf}")
+    
     # convert local kwargs to `makeotf` compatible arguments
     cmd = [MAKEOTF, psf_path, str(out_file)]
     for key, value in kwargs.items():
@@ -98,13 +98,20 @@ def make_otf(
 
 
 @contextmanager
-def temporary_otf(psf, **kwargs) -> Iterator[str]:
+def temporary_otf(
+    psf: Optional[np.ndarray] = None, otf: Optional[np.ndarray] = None, **kwargs
+) -> Iterator[str]:
     """Convenience to generate a temporary OTF file from a PSF file or array."""
+    assert (psf is not None) or (otf is not None), "Must provide either psf or otf"
+
     temp_otf = NamedTemporaryFile(suffix=".tif", delete=False)
     temp_otf.close()
     kwargs["out_file"] = temp_otf.name
     try:
-        make_otf(psf, **kwargs)
+        if psf is not None:
+            make_otf(psf, **kwargs)
+        else:
+            tifffile.imwrite(temp_otf.name, otf, photometric="MINISBLACK")
         yield temp_otf.name
     finally:
         Path(temp_otf.name).unlink()

@@ -54,9 +54,15 @@ def _close_enough(a, b, max_mean=0.3, max_std=0.06):
     return diff.mean() < max_mean and diff.std() < max_std
 
 
-def test_reconstruct(params):
+def test_reconstruct_with_file_otf(params):
     raw = tf.imread(RAW)
-    result = reconstruct(raw, otf_file=OTF, **params.dict(exclude_unset=True))
+    result = reconstruct(raw, otf=OTF, **params.dict(exclude_unset=True))
+    assert _close_enough(EXPECTED, result)
+
+
+def test_reconstruct_with_array_otf(params):
+    raw = tf.imread(RAW)
+    result = reconstruct(raw, otf=tf.imread(OTF), **params.dict(exclude_unset=True))
     assert _close_enough(EXPECTED, result)
 
 

@@ -16,13 +16,13 @@ caplog = nullcontext
 
 def reconstruct(
     array: np.ndarray,
-    otf_file: PathLike = None,
+    otf: Union[np.ndarray, PathLike, None] = None,
     psf: Union[np.ndarray, PathLike, None] = None,
-    makeotf_kwargs: dict = {},
+    makeotf_kwargs: Union[dict, None] = None,
+    otf_file: Union[PathLike, None] = None,
     **kwargs,
 ) -> np.ndarray:
     """Perform SIM reconstruction on array.
-
 
     Parameters
     ----------
@@ -47,17 +47,26 @@ def reconstruct(
     np.ndarray
         The reconstructed array.
     """
-    if psf is None and otf_file is None:
-        raise ValueError("Either `psf` or `otf_file` must be provided.")
-
     if otf_file is not None:
+        otf = otf_file
+        warnings.warn(
+            'The "otf_file" argument is deprecated. Use "otf" instead.',
+            DeprecationWarning,
+        )
+
+    if otf is not None:
         if psf is not None:
-            warnings.warn("Both `otf_file` and `psf` provided, otf_file will be used.")
-        if not Path(otf_file).exists():
-            raise FileNotFoundError(f"Provided `otf_file` does not exist: {otf_file}")
-        _otf_context = nullcontext(otf_file)
+            warnings.warn("Both `otf` and `psf` provided, otf will be used.")
+        if isinstance(otf, (str, Path)):
+            if not Path(otf).exists():
+                raise FileNotFoundError(f"Provided `otf` does not exist: {otf}")
+            _otf_context = nullcontext(otf)
+        else:
+            _otf_context = temporary_otf(otf=otf)
+    elif psf is not None:
+        _otf_context = temporary_otf(psf=psf, **(makeotf_kwargs or {}))
     else:
-        _otf_context = temporary_otf(psf, **makeotf_kwargs)
+        raise ValueError("Either `psf` or `otf` must be provided.")
 
     with _otf_context as _otf_path:
         with temp_config(otf_file=_otf_path, **kwargs) as cfg:
