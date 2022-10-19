@@ -1,4 +1,4 @@
-name: pycudasim
+name: pycudasirecon
 channels:
   - conda-forge
 dependencies:
@@ -9,3 +9,4 @@ dependencies:
   - pydantic
   - cudasirecon
   - cupy
+  - pytest

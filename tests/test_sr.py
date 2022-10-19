@@ -18,7 +18,7 @@ OTF = DATA / "otf.tif"
 PSF = DATA / "psf.tif"
 RAW = DATA / "raw.tif"
 CONFIG = DATA / "config"
-EXPECTED = DATA / "expected.tif"
+EXPECTED = tf.imread(DATA / "expected.tif")
 
 ATOL = 0.3 if os.name == "nt" else 1e-08
 
@@ -49,10 +49,15 @@ def params():
     )
 
 
+def _close_enough(a, b, max_mean=0.3, max_std=0.06):
+    diff = np.abs(a - b)
+    return diff.mean() < max_mean and diff.std() < max_std
+
+
 def test_reconstruct(params):
     raw = tf.imread(RAW)
     result = reconstruct(raw, otf_file=OTF, **params.dict(exclude_unset=True))
-    assert np.allclose(tf.imread(EXPECTED), result, atol=ATOL)
+    assert _close_enough(EXPECTED, result)
 
 
 def test_reconstruct_with_file_psf(params):
@@ -62,7 +67,7 @@ def test_reconstruct_with_file_psf(params):
         makeotf_kwargs=dict(fixorigin=(3, 20)),
         **params.dict(exclude_unset=True)
     )
-    assert np.allclose(tf.imread(EXPECTED), result, atol=ATOL)
+    assert _close_enough(EXPECTED, result)
 
 
 def test_reconstruct_with_array_psf(params):
@@ -72,7 +77,7 @@ def test_reconstruct_with_array_psf(params):
         makeotf_kwargs=dict(fixorigin=(3, 20)),
         **params.dict(exclude_unset=True)
     )
-    assert np.allclose(tf.imread(EXPECTED), result, atol=ATOL)
+    assert _close_enough(EXPECTED, result)
 
 
 def test_make_otf_from_file(tmp_path):

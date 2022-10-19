@@ -66,7 +66,7 @@ def make_otf(
     if not isinstance(psf, (str, Path)):
         temp_psf = NamedTemporaryFile(suffix=".tif", delete=False)
         temp_psf.close()
-        tifffile.imsave(temp_psf.name, psf)
+        tifffile.imwrite(temp_psf.name, psf)
         psf_path = temp_psf.name
     else:
         if not Path(psf).exists():
