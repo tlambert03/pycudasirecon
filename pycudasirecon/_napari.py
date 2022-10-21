@@ -34,10 +34,13 @@ def init(self):
         size=10,
         scaling=True,
         parent=view.scene,
-        alpha=0.2,
+        face_color="transparent",
+        edge_color="blue"
     )
-    img = vispy.scene.visuals.Image(parent=view.scene, cmap="gray", clim=(0, 1))
-    view.camera.aspect = 1  # type: ignore
+    img = vispy.scene.visuals.Image(
+        parent=view.scene, cmap="gray", clim=(0, 1), blending="additive",
+    )
+    view.camera.aspect = 1
     self.native.layout().addWidget(canvas.native)
     canvas.native.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -56,9 +59,7 @@ def init(self):
             points.append(center + pos)
             points.append(center - pos)
 
-        markers.set_data(np.array(points), face_color="blue", edge_color="blue")
-
-    draw_spots()
+        markers.set_data(np.array(points), face_color="transparent", edge_color="blue")
 
     @self.image.changed.connect
     def on_image_change(new_image: "napari.layers.Image"):
@@ -73,39 +74,46 @@ def init(self):
         new -= new.min()
         new /= new.max() * 0.02
         img.set_data(new**0.4)
+        draw_spots()
         view.camera.set_range(margin=0)
 
 
-@magic_factory(persist=True, widget_init=init,)
+@magic_factory(
+    persist=True,
+    widget_init=init,
+)
 def sim_reconstruct(
     image: "napari.layers.Image",
     otf: Path,
     nimm: float = 1.515,
     background: float = 0,
-    wiener: Annotated[float, {"widget_type": "FloatSlider", "step": 0.001, "min": 0.001, "max": 0.02}] = 0.001,
+    wiener: Annotated[
+        float, {"widget_type": "FloatSlider", "step": 0.001, "min": 0.001, "max": 0.02}
+    ] = 0.001,
     k0angles: Tuple[float, float, float] = (0.804300, 1.8555, -0.238800),
     ls: float = 0.2035,
     ndirs: int = 3,
     nphases: int = 5,
     na: float = 1.42,
-    # otfRA: bool = True,
-    dampenOrder0: bool = True,
     xyres: float = 0.08,
     zres: float = 0.125,
     zresPSF: float = 0.125,
-    format: Annotated[str, {'choices': ['PZA', 'PAZ']}] = "PZA",
-
+    format: Annotated[str, {"choices": ["PZA", "PAZ"]}] = "PZA",
+    # otfRA: bool = True,
+    dampenOrder0: bool = True,
     pseudo_widefield: bool = True,
 ) -> "napari.types.LayerDataTuple":
     from pycudasirecon import reconstruct, ReconParams
 
     params = locals().copy()
-    params['fastSI'] = bool(params.pop('format') != 'PZA')
+    params["fastSI"] = bool(params.pop("format") != "PZA")
     image = params.pop("image")
     _otf = str(params.pop("otf"))
     _params = ReconParams(**params)
     data = reconstruct(image.data, otf=_otf, **_params.dict(exclude_unset=True))
-    meta = dict(scale=list(image.scale), name=f"{image.name} (recon)", blending="additive")
+    meta = dict(
+        scale=list(image.scale), name=f"{image.name} (recon)", blending="additive"
+    )
 
     meta["scale"][-1] = meta["scale"][-1] / 2
     meta["scale"][-2] = meta["scale"][-2] / 2
