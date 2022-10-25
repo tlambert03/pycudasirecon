@@ -1,87 +1,128 @@
-from typing import TYPE_CHECKING, List, Tuple
+from email.utils import quote
+from pathlib import Path
+from typing import TYPE_CHECKING, List, Tuple, Annotated
+
+
+import numpy as np
+import vispy.scene
 from magicgui import magic_factory
-from typing_extensions import Annotated
 from napari.types import ImageData
 from napari_plugin_engine import napari_hook_implementation
-from pathlib import Path
-import vispy.scene
-import numpy as np
+from scipy.fft import fftn, fftshift, ifftshift, rfftn
+from typing_extensions import Annotated
+from napari.components import ViewerModel
+from napari.qt import QtViewer
+
 
 if TYPE_CHECKING:
-    import numpy as np
     import napari.layers
     import napari.types
+    import numpy as np
 
 
-def _pseudo_wf(image: "np.ndarray", order: str = "azp", nphases=5, nangles=3):
-    # TODO: deal with 4+ dims
-    pax = order.index("p")
-    aax = order.index("a")
+def _split_paz(
+    image: "np.ndarray", order: str = "pza", nphases=5, nangles=3
+) -> np.ndarray:
+    """Return 5 dimensional array with shape (nphases, nangles, nz, ny, nx)"""
+    assert image.ndim == 3, "image must be 3D"
+    _order = list(reversed(order.lower()))
+    pax = _order.index("p")
+    aax = _order.index("a")
+    zax = _order.index("z")
     reshp = [-1, -1, -1] + list(image.shape[-2:])
     reshp[pax] = nphases
     reshp[aax] = nangles
-    return image.reshape(reshp).mean((pax, aax))
+    img = image.reshape(reshp)
+    return img.transpose((pax, aax, zax, -2, -1))
+
+
+def _fft(data: np.ndarray, r: bool = False, **kwargs):
+    return ifftshift((rfftn if r else fftn)(fftshift(data), **kwargs))
+
+
+def _pseudo_wf(image: "np.ndarray", order: str = "pza", nphases=5, nangles=3):
+    # TODO: deal with 4+ dims
+    return _split_paz(image, order, nphases, nangles).mean((0, 1))
+
+
+def _extract_orders(pazyx: np.ndarray) -> np.ndarray:
+    """Return array with shape ((nphases-1)/2, nangles, ny, nx).
+
+    the first axis highlights the fft orders. from high frequency to low.
+    the second axis is the various angles
+    """
+    # shows components well:
+    # take fft over PYX
+    fpaz = np.abs(_fft(pazyx, axes=(-5, -2, -1)))
+    fpaz = np.delete(fpaz, 3, 0)  # removes the unshifted component
+    fpaz = fpaz.mean(axis=2)  # average over z
+    fpaz = fpaz.reshape((2, 2, 3, *fpaz.shape[-2:]))
+    return fpaz.sum(axis=1)
+
+
+def build_rgb_fft(data: np.ndarray, order="pza", nphases=5, nangles=3):
+    """Return RGB image of FFT of data"""
+    pazyx = _split_paz(data, order, nphases, nangles)
+    orders = _extract_orders(pazyx)
+    rgb = orders.sum(axis=0).transpose()
+    rgb -= rgb.min()
+    rgb /= rgb.max()
+    return rgb**0.5
 
 
 def init(self):
     from qtpy.QtWidgets import QSizePolicy
 
-    canvas = vispy.scene.SceneCanvas(keys="interactive")
-    canvas.size = 800, 600
-    view = canvas.central_widget.add_view(camera="panzoom")
-    markers = vispy.scene.visuals.Markers(
-        pos=np.array([(0, 0)]),
-        size=10,
-        scaling=True,
-        parent=view.scene,
+    for wdg in self.k0angles:
+        wdg.min = -np.pi
+        wdg.max = np.pi
+    
+    self._fft_viewer = ViewerModel()
+    self._fft_qtviewer = QtViewer(self._fft_viewer)
+    img: napari.layers.Image = self._fft_viewer.add_image(np.zeros((128, 128, 3)))
+    points: napari.layers.Points = self._fft_viewer.add_points(
         face_color="transparent",
-        edge_color="blue"
+        opacity=0.7,
     )
-    img = vispy.scene.visuals.Image(
-        parent=view.scene, cmap="gray", clim=(0, 1), blending="additive",
-    )
-    view.camera.aspect = 1
-    self.native.layout().addWidget(canvas.native)
-    canvas.native.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+    nativecan = self._fft_qtviewer.canvas.native
+    nativecan.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+    self.native.layout().addWidget(nativecan)
+    nativecan.show()
+    self.max_width = 600
 
     @self.k0angles.changed.connect
     @self.ls.changed.connect
     def draw_spots():
-        if img._data is None:
+        if img.data is None:
             return
-        center = np.array(img._data.shape) / 2
-        k0angles = self.k0angles.value
-        ls = self.ls.value
-        points = []
-        scale = 1 / (ls * self.xyres.value)
-        for angle in k0angles:
-            pos = scale * np.array([np.cos(angle), np.sin(angle)])
-            points.append(center + pos)
-            points.append(center - pos)
 
-        markers.set_data(np.array(points), face_color="transparent", edge_color="blue")
+        center = np.array(img.data.shape[:-1]) / 2
+        _points = []
+        scale = 0.8 / (self.ls.value * self.xyres.value)
+        for angle in self.k0angles.value:
+            pos = scale * np.array([np.cos(angle), np.sin(angle)])
+            _points.append(center + pos)
+            _points.append(center - pos)
+
+        points.data = np.array(_points)
+        points.edge_color = ["red", "red", "green", "green", "blue", "blue"]
+        points.selected_data = {}
 
     @self.image.changed.connect
     def on_image_change(new_image: "napari.layers.Image"):
-        from scipy.fft import fftn, fftshift, ifftshift
 
-        nz, ny, nx = new_image.data.shape
-        angles = 3
-        d = new_image.data.reshape(angles, -1, ny, nx)
-
-        new = np.abs(ifftshift(fftn(fftshift(d), axes=(1, 2, 3)))).astype(np.float32)
-        new = new.mean((0, 1))
-        new -= new.min()
-        new /= new.max() * 0.02
-        img.set_data(new**0.4)
+        rgb = build_rgb_fft(
+            new_image.data,
+            self.format.value,
+            self.nphases.value,
+            len(self.k0angles.value),
+        )
+        img.data = rgb
         draw_spots()
-        view.camera.set_range(margin=0)
+        self._fft_viewer.reset_view()
 
-
-@magic_factory(
-    persist=True,
-    widget_init=init,
-)
+@magic_factory(persist=True, widget_init=init)
 def sim_reconstruct(
     image: "napari.layers.Image",
     otf: Path,
@@ -103,7 +144,7 @@ def sim_reconstruct(
     dampenOrder0: bool = True,
     pseudo_widefield: bool = True,
 ) -> "napari.types.LayerDataTuple":
-    from pycudasirecon import reconstruct, ReconParams
+    from pycudasirecon import ReconParams, reconstruct
 
     params = locals().copy()
     params["fastSI"] = bool(params.pop("format") != "PZA")
