@@ -150,7 +150,7 @@ def sim_reconstruct(
     params["fastSI"] = bool(params.pop("format") != "PZA")
     image = params.pop("image")
     _otf = str(params.pop("otf"))
-    _params = ReconParams(**params)
+    _params = ReconParams(otfRA=True, **params)
     data = reconstruct(image.data, otf=_otf, **_params.dict(exclude_unset=True))
     meta = dict(
         scale=list(image.scale), name=f"{image.name} (recon)", blending="additive"
