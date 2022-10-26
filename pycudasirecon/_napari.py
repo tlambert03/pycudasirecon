@@ -10,12 +10,18 @@ from scipy.fft import fftn, fftshift, ifftshift, rfftn, fftfreq
 from typing_extensions import Annotated
 from napari.components import ViewerModel
 from napari.qt import QtViewer
-
+import functools
+import time
 
 if TYPE_CHECKING:
     import napari.layers
     import napari.types
     import numpy as np
+
+
+@functools.lru_cache(maxsize=None)
+def _ffreqs(shape, spacing):
+    return 1 / (fftfreq(shape, spacing) + np.finfo(float).eps)
 
 
 def _split_paz(
@@ -35,7 +41,6 @@ def _split_paz(
 
 
 def _fft(data: np.ndarray, r: bool = False, **kwargs):
-    print("FFT")
     return ifftshift((rfftn if r else fftn)(fftshift(data), **kwargs))
 
 
@@ -98,21 +103,17 @@ def init(self):
     @self.ls.changed.connect
     @self.xyres.changed.connect
     def draw_spots():
-
         if img.data is None:
             return
+
         ny, nx, _ = img.data.shape
         center = np.array([ny, nx]) / 2
-        _points = []
-        freqs = 1 / (fftfreq(nx, self.xyres.value) + np.finfo(float).eps)
+        freqs = _ffreqs(nx, self.xyres.value)
         # ls * 2 because the inner spot is much easier to see.
         scale = np.argmax((self.ls.value * 2) > freqs)
-        for angle in self.k0angles.value:
-            pos = scale * np.array([np.cos(angle), np.sin(angle)])
-            _points.append(center + pos)
-            # _points.append(center - pos)
 
-        points.data = np.array(_points)
+        _points = [[np.cos(a), np.sin(a)] for a in self.k0angles.value]
+        points.data = center + scale * np.array(_points)
         # points.edge_color = ["red", "red", "green", "green", "blue", "blue"]
         points.edge_color = ["red", "green", "blue"]
         points.selected_data = {}
@@ -121,9 +122,11 @@ def init(self):
     @self.format.changed.connect
     @self.nphases.changed.connect
     def on_image_change():
+        if self.image.value is None:
+            return
 
         rgb = build_rgb_fft(
-            self.image.data,
+            self.image.value.data,
             self.format.value,
             self.nphases.value,
             len(self.k0angles.value),
@@ -132,6 +135,7 @@ def init(self):
         draw_spots()
         self._fft_viewer.reset_view()
 
+    on_image_change()
 
 @magic_factory(persist=True, widget_init=init)
 def sim_reconstruct(
