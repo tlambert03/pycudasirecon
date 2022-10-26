@@ -75,6 +75,8 @@ def init(self):
     for wdg in self.k0angles:
         wdg.min = -np.pi
         wdg.max = np.pi
+        wdg.native.setDecimals(3)
+    self.ls.native.setDecimals(3)
 
     self._fft_viewer = ViewerModel()
     self._fft_qtviewer = QtViewer(self._fft_viewer)
@@ -94,6 +96,7 @@ def init(self):
 
     @self.k0angles.changed.connect
     @self.ls.changed.connect
+    @self.xyres.changed.connect
     def draw_spots():
 
         if img.data is None:
@@ -101,11 +104,9 @@ def init(self):
         ny, nx, _ = img.data.shape
         center = np.array([ny, nx]) / 2
         _points = []
-        scale = np.argmax(
-            (self.ls.value * 2)
-            > (1 / (fftfreq(nx, self.xyres.value) + np.finfo(float).eps))
-        )
-
+        freqs = 1 / (fftfreq(nx, self.xyres.value) + np.finfo(float).eps)
+        # ls * 2 because the inner spot is much easier to see.
+        scale = np.argmax((self.ls.value * 2) > freqs)
         for angle in self.k0angles.value:
             pos = scale * np.array([np.cos(angle), np.sin(angle)])
             _points.append(center + pos)
@@ -117,10 +118,12 @@ def init(self):
         points.selected_data = {}
 
     @self.image.changed.connect
-    def on_image_change(new_image: "napari.layers.Image"):
+    @self.format.changed.connect
+    @self.nphases.changed.connect
+    def on_image_change():
 
         rgb = build_rgb_fft(
-            new_image.data,
+            self.image.data,
             self.format.value,
             self.nphases.value,
             len(self.k0angles.value),
