@@ -4,11 +4,9 @@ from typing import TYPE_CHECKING, List, Tuple, Annotated
 
 
 import numpy as np
-import vispy.scene
 from magicgui import magic_factory
-from napari.types import ImageData
 from napari_plugin_engine import napari_hook_implementation
-from scipy.fft import fftn, fftshift, ifftshift, rfftn
+from scipy.fft import fftn, fftshift, ifftshift, rfftn, fftfreq
 from typing_extensions import Annotated
 from napari.components import ViewerModel
 from napari.qt import QtViewer
@@ -37,6 +35,7 @@ def _split_paz(
 
 
 def _fft(data: np.ndarray, r: bool = False, **kwargs):
+    print("FFT")
     return ifftshift((rfftn if r else fftn)(fftshift(data), **kwargs))
 
 
@@ -57,7 +56,7 @@ def _extract_orders(pazyx: np.ndarray) -> np.ndarray:
     fpaz = np.delete(fpaz, 3, 0)  # removes the unshifted component
     fpaz = fpaz.mean(axis=2)  # average over z
     fpaz = fpaz.reshape((2, 2, 3, *fpaz.shape[-2:]))
-    return fpaz.sum(axis=1)
+    return fpaz[:, 1]  # adds the mid freq and high freq together
 
 
 def build_rgb_fft(data: np.ndarray, order="pza", nphases=5, nangles=3):
@@ -67,7 +66,7 @@ def build_rgb_fft(data: np.ndarray, order="pza", nphases=5, nangles=3):
     rgb = orders.sum(axis=0).transpose()
     rgb -= rgb.min()
     rgb /= rgb.max()
-    return rgb**0.5
+    return rgb**0.6
 
 
 def init(self):
@@ -76,10 +75,12 @@ def init(self):
     for wdg in self.k0angles:
         wdg.min = -np.pi
         wdg.max = np.pi
-    
+
     self._fft_viewer = ViewerModel()
     self._fft_qtviewer = QtViewer(self._fft_viewer)
-    img: napari.layers.Image = self._fft_viewer.add_image(np.zeros((128, 128, 3)))
+    img: napari.layers.Image = self._fft_viewer.add_image(
+        np.zeros((128, 128, 3)), rgb=True, contrast_limits=(0, 0.7)
+    )
     points: napari.layers.Points = self._fft_viewer.add_points(
         face_color="transparent",
         opacity=0.7,
@@ -94,19 +95,25 @@ def init(self):
     @self.k0angles.changed.connect
     @self.ls.changed.connect
     def draw_spots():
+
         if img.data is None:
             return
-
-        center = np.array(img.data.shape[:-1]) / 2
+        ny, nx, _ = img.data.shape
+        center = np.array([ny, nx]) / 2
         _points = []
-        scale = 0.8 / (self.ls.value * self.xyres.value)
+        scale = np.argmax(
+            (self.ls.value * 2)
+            > (1 / (fftfreq(nx, self.xyres.value) + np.finfo(float).eps))
+        )
+
         for angle in self.k0angles.value:
             pos = scale * np.array([np.cos(angle), np.sin(angle)])
             _points.append(center + pos)
-            _points.append(center - pos)
+            # _points.append(center - pos)
 
         points.data = np.array(_points)
-        points.edge_color = ["red", "red", "green", "green", "blue", "blue"]
+        # points.edge_color = ["red", "red", "green", "green", "blue", "blue"]
+        points.edge_color = ["red", "green", "blue"]
         points.selected_data = {}
 
     @self.image.changed.connect
@@ -121,6 +128,7 @@ def init(self):
         img.data = rgb
         draw_spots()
         self._fft_viewer.reset_view()
+
 
 @magic_factory(persist=True, widget_init=init)
 def sim_reconstruct(
