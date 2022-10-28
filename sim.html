@@ -210,19 +210,19 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pycudasirecon.SIMReconstructor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycudasirecon.</span></span><span class="sig-name descname"><span class="pre">SIMReconstructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Main class for SIM reconstruction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arg0</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>]</em><em>]</em>) – Either a numpy array of raw data, or a shape tuple (3 integers) that indicate
+<li><p><strong>arg0</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>]</em><em>]</em>) – Either a numpy array of raw data, or a shape tuple (3 integers) that indicate
 the size of raw data (to be provided later with <cite>set_raw</cite>).</p></li>
-<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Config file path.  Currently, the config file <em>must</em> include the otf-file key.
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – Config file path.  Currently, the config file <em>must</em> include the otf-file key.
 by default None</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.10)"><strong>ValueError</strong></a> – If the array is not ndim==3 or shape is not a 3-tuple</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If the array is not ndim==3 or shape is not a 3-tuple</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -255,7 +255,7 @@ by default None</p></li>
 <span class="sig-name descname"><span class="pre">set_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.set_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.set_raw" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -270,11 +270,11 @@ by default None</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>np.ndarray</em>) – The array to reconstruct</p></li>
-<li><p><strong>otf_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – OTF file to use for reconstruction.  Either PSF or OTF must be provided,
+<li><p><strong>otf_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – OTF file to use for reconstruction.  Either PSF or OTF must be provided,
 by default None</p></li>
-<li><p><strong>psf</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – PSF to use for reconstruction. Either PSF or OTF must be provided,
+<li><p><strong>psf</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – PSF to use for reconstruction. Either PSF or OTF must be provided,
 by default None</p></li>
-<li><p><strong>makeotf_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – If <cite>psf</cite> is provided, these kwargs will be passed to the
+<li><p><strong>makeotf_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – If <cite>psf</cite> is provided, these kwargs will be passed to the
 <a class="reference internal" href="otf.html#pycudasirecon.make_otf" title="pycudasirecon.make_otf"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_otf()</span></code></a> function when generating the OTF.
 See <cite>make_otf</cite> docstring for details.</p></li>
 <li><p><strong>kwargs</strong> (<em>**</em>) – Reconstruction parameters.  See <code class="xref py py-class docutils literal notranslate"><span class="pre">ReconParams</span></code> for valid
