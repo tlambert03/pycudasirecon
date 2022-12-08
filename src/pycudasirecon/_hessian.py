@@ -24,7 +24,7 @@ def hessian_denoise(
     May be applied to images images reconstructed with Wiener method to further
     reduce noise.
 
-    Adapted from MATLAB code published in Huang et al 2018 [1]_.
+    Adapted from MATLAB code published in Huang et al 2018.
     See supplementary information (fig 7) for details on the paramaeters.
 
     Parameters
@@ -54,7 +54,6 @@ def hessian_denoise(
     .. [1] Huang, X., Fan, J., Li, L. et al. Fast, long-term, super-resolution imaging
            with Hessian structured illumination microscopy. Nat Biotechnol 36, 451-459
            (2018). https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/nbt.4115
-
     """
     if xp is not cupy:
         warnings.warn("could not import cupy... falling back to numpy & cpu.")
