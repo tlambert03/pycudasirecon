@@ -1,11 +1,9 @@
-from email.utils import quote
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Tuple, Annotated
 
 
 import numpy as np
 from magicgui import magic_factory
-from napari_plugin_engine import napari_hook_implementation
 from scipy.fft import fftn, fftshift, ifftshift, rfftn, fftfreq
 from typing_extensions import Annotated
 from napari.components import ViewerModel
@@ -137,6 +135,7 @@ def init(self):
 
     on_image_change()
 
+
 @magic_factory(persist=True, widget_init=init)
 def sim_reconstruct(
     image: "napari.layers.Image",
@@ -184,8 +183,3 @@ def sim_reconstruct(
             )
         )
     return out
-
-
-@napari_hook_implementation
-def napari_experimental_provide_dock_widget():
-    return sim_reconstruct
