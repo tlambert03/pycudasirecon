@@ -5,3 +5,5 @@ __pycache__
 .mypy_cache
 .vscode
 docs/_build/
+src/pycudasirecon/_version.py
+dist/

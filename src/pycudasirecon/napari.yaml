@@ -1,0 +1,10 @@
+name: pycudasirecon
+schema_version: 0.1.0
+contributions:
+  commands:
+    - id: pycudasirecon.sim_reconstruct
+      title: Make SIM Recontruction widget
+      python_name: pycudasirecon._napari:sim_reconstruct
+  widgets:
+    - command: pycudasirecon.sim_reconstruct
+      display_name: SIM Recontruction

@@ -2,7 +2,6 @@ from pathlib import Path
 
 import numpy as np
 import tifffile
-
 from pycudasirecon import hessian_denoise
 
 DATA = Path(__file__).parent / "data"

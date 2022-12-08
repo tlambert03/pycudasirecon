@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import warnings
 from contextlib import nullcontext
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Any, ContextManager
 
 import numpy as np
 
@@ -16,11 +18,11 @@ caplog = nullcontext
 
 def reconstruct(
     array: np.ndarray,
-    otf: Union[np.ndarray, PathLike, None] = None,
-    psf: Union[np.ndarray, PathLike, None] = None,
-    makeotf_kwargs: Union[dict, None] = None,
-    otf_file: Union[PathLike, None] = None,
-    **kwargs,
+    otf: np.ndarray | PathLike | None = None,
+    psf: np.ndarray | PathLike | None = None,
+    makeotf_kwargs: dict | None = None,
+    otf_file: PathLike | None = None,
+    **kwargs: Any,
 ) -> np.ndarray:
     """Perform SIM reconstruction on array.
 
@@ -28,8 +30,8 @@ def reconstruct(
     ----------
     array : np.ndarray
         The array to reconstruct
-    otf_file : str or Path, optional
-        OTF file to use for reconstruction.  Either PSF or OTF must be provided,
+    otf : array or str or Path, optional
+        OTF to use for reconstruction. Either PSF or OTF must be provided,
         by default None
     psf : array or str or Path, optional
         PSF to use for reconstruction. Either PSF or OTF must be provided,
@@ -38,7 +40,10 @@ def reconstruct(
         If `psf` is provided, these kwargs will be passed to the
         :func:`~pycudasirecon.make_otf` function when generating the OTF.
         See `make_otf` docstring for details.
-    ** kwargs
+    otf_file : str or Path, optional
+        OTF file to use for reconstruction.  Either PSF or OTF must be provided,
+        by default None
+    **kwargs: Any
         Reconstruction parameters.  See :class:`~pycudasirecon.ReconParams` for valid
         keys.
 
@@ -60,7 +65,7 @@ def reconstruct(
         if isinstance(otf, (str, Path)):
             if not Path(otf).exists():
                 raise FileNotFoundError(f"Provided `otf` does not exist: {otf}")
-            _otf_context = nullcontext(otf)
+            _otf_context: ContextManager = nullcontext(otf)
         else:
             _otf_context = temporary_otf(otf=otf)
     elif psf is not None:
@@ -93,10 +98,10 @@ class SIMReconstructor:
 
     def __init__(
         self,
-        arg0: Union[np.ndarray, Tuple[int, int, int]],
+        arg0: np.ndarray | tuple[int, int, int],
         config: str,
     ) -> None:
-        image: Optional[np.ndarray]
+        image: np.ndarray | None
         if isinstance(arg0, np.ndarray):
             if arg0.ndim != 3:
                 raise ValueError("array must have 3 dimensions")
@@ -115,11 +120,13 @@ class SIMReconstructor:
             self.set_raw(image)
             self.process_volume()
 
-    def process_volume(self):
+    def process_volume(self) -> None:
+        """Process the current volume."""
         with caplog():
             lib.SR_processOneVolume(self._ptr)
 
     def set_raw(self, img: np.ndarray) -> None:
+        """Assign `img` as the raw data to be reconstructed."""
         nz, ny, nx = img.shape
         if not np.issubdtype(img.dtype, np.float32) or not img.flags["C_CONTIGUOUS"]:
             img = np.ascontiguousarray(img, dtype=np.float32)
@@ -129,6 +136,7 @@ class SIMReconstructor:
             lib.SR_setCurTimeIdx(self._ptr, 0)
 
     def get_result(self) -> np.ndarray:
+        """Return the current reconstruction result."""
         *_, ny, nx = self.shape
         rp = self.get_recon_params()
         nz = int(self.get_image_params().nz * rp.z_zoom)
@@ -139,8 +147,10 @@ class SIMReconstructor:
 
     # TODO: can't add type hints here yet since build-docs will try to resolve them
     # and that requires the lib still.
-    def get_recon_params(self):
+    def get_recon_params(self) -> lib.ReconParams:
+        """Return the current reconstruction parameters."""
         return lib.ReconParams.from_address(lib.SR_getReconParams(self._ptr))
 
-    def get_image_params(self):
+    def get_image_params(self) -> lib.ImageParams:
+        """Return the current image parameters."""
         return lib.ImageParams.from_address(lib.SR_getImageParams(self._ptr))

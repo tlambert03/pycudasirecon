@@ -5,6 +5,7 @@ import sys
 import tempfile
 from contextlib import contextmanager
 from functools import partial
+from typing import Any, Iterator
 
 WIN = os.name == "nt"
 if WIN:
@@ -22,11 +23,11 @@ else:
 
 
 @contextmanager
-def stdout_redirected(stream=os.devnull):
+def stdout_redirected(stream: Any = os.devnull) -> Iterator[None]:
     # The original fd stdout points to. Usually 1 on POSIX systems.
     original_stdout_fd = sys.stdout.fileno()
 
-    def _redirect_stdout(to_fd):
+    def _redirect_stdout(to_fd: int) -> None:
         """Redirect stdout to the given file descriptor."""
         # Flush the C-level buffer stdout
         libc.fflush(c_stdout)

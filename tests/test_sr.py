@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 import tifffile as tf
-
 from pycudasirecon import ReconParams, make_otf, reconstruct, sim_reconstructor
 from pycudasirecon._otf import temporary_otf
 
@@ -70,7 +69,7 @@ def test_reconstruct_with_file_psf(params):
     result = reconstruct(
         tf.imread(RAW),
         psf=PSF,
-        makeotf_kwargs=dict(fixorigin=(3, 20)),
+        makeotf_kwargs={"fixorigin": (3, 20)},
         **params.dict(exclude_unset=True)
     )
     assert _close_enough(EXPECTED, result)
@@ -80,7 +79,7 @@ def test_reconstruct_with_array_psf(params):
     result = reconstruct(
         tf.imread(RAW),
         psf=tf.imread(PSF),
-        makeotf_kwargs=dict(fixorigin=(3, 20)),
+        makeotf_kwargs={"fixorigin": (3, 20)},
         **params.dict(exclude_unset=True)
     )
     assert _close_enough(EXPECTED, result)

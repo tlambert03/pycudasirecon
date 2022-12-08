@@ -3,6 +3,5 @@
 ## API
 
 ```{eval-rst}
-.. automodule:: pycudasirecon
-    :members: hessian_denoise
+.. autofunction:: pycudasirecon.hessian_denoise
 ```

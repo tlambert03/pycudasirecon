@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 
 import numpy as np
@@ -10,13 +12,19 @@ except ImportError:
 xp = np if cupy is None else cupy
 
 
-def hessian_denoise(initial: np.ndarray, iters=50, mu=150, sigma: float = 1, lamda=1):
+def hessian_denoise(
+    initial: np.ndarray,
+    iters: int = 50,
+    mu: int = 150,
+    sigma: float = 1,
+    lamda: int = 1,
+) -> np.ndarray:
     """Hessian (Split-Bregman) SIM denoise algorithm.
 
     May be applied to images images reconstructed with Wiener method to further
     reduce noise.
 
-    Adapted from MATLAB code published in Huang et al 2018 [1]_.
+    Adapted from MATLAB code published in Huang et al 2018.
     See supplementary information (fig 7) for details on the paramaeters.
 
     Parameters
@@ -43,11 +51,9 @@ def hessian_denoise(initial: np.ndarray, iters=50, mu=150, sigma: float = 1, lam
 
     References
     ----------
-
     .. [1] Huang, X., Fan, J., Li, L. et al. Fast, long-term, super-resolution imaging
-           with Hessian structured illumination microscopy. Nat Biotechnol 36, 451–459
+           with Hessian structured illumination microscopy. Nat Biotechnol 36, 451-459
            (2018). https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/nbt.4115
-
     """
     if xp is not cupy:
         warnings.warn("could not import cupy... falling back to numpy & cpu.")
@@ -83,7 +89,7 @@ def hessian_denoise(initial: np.ndarray, iters=50, mu=150, sigma: float = 1, lam
         frac = xp.fft.fftn(frac)
 
         divisor = divide if ii >= 1 else _mu_d_lamda
-        x = xp.fft.ifftn(frac / divisor).real
+        x = xp.fft.ifftn(frac / divisor).real  # type: ignore
 
         frac = _mu_d_lamda * initial
         frac += _bfbf(bs[0], 1, 1, x, lamda)
@@ -98,38 +104,38 @@ def hessian_denoise(initial: np.ndarray, iters=50, mu=150, sigma: float = 1, lam
         x = x[: initial.shape[0]]
     x *= ymax
 
-    return x.get() if hasattr(x, "get") else x
+    return x.get() if hasattr(x, "get") else x  # type: ignore
 
 
-def _fft_of_diff(shape, sigma):
+def _fft_of_diff(shape: tuple[int, ...], sigma: float) -> np.ndarray:
     # FFTs of difference operator
     _v0 = xp.array([1, -2, 1])
     _v1 = xp.array([[1, -1], [-1, 1]])
     divide = (
         _fconj(_v0.reshape((1, 1, 3)), shape)
         + _fconj(_v0.reshape((1, 3, 1)), shape)
-        + (sigma ** 2) * _fconj(_v0.reshape((3, 1, 1)), shape)
+        + (sigma**2) * _fconj(_v0.reshape((3, 1, 1)), shape)
         + 2 * _fconj(_v1.reshape((1, 2, 2)), shape)
         + 2 * sigma * _fconj(_v1.reshape((2, 1, 2)), shape)
         + 2 * sigma * _fconj(_v1.reshape((2, 2, 1)), shape)
     )
-    return divide.real
+    return divide.real  # type: ignore
 
 
-def _fconj(array, shape):
+def _fconj(array: np.ndarray, shape: tuple[int, ...]) -> np.ndarray:
     tmp_fft = xp.fft.fftn(array, shape)
-    return tmp_fft * xp.conj(tmp_fft)
+    return tmp_fft * xp.conj(tmp_fft)  # type: ignore
 
 
-def _forward_diff(data, axis):
-    return xp.diff(data, axis=axis, append=0)
+def _forward_diff(data: np.ndarray, axis: int) -> np.ndarray:
+    return xp.diff(data, axis=axis, append=0)  # type: ignore
 
 
-def _back_diff(data, axis):
-    return xp.diff(data, axis=axis, prepend=0)
+def _back_diff(data: np.ndarray, axis: int) -> np.ndarray:
+    return xp.diff(data, axis=axis, prepend=0)  # type: ignore
 
 
-def _middle(u, b_, lamda):
+def _middle(u: np.ndarray, b_: float, lamda: int) -> np.ndarray:
     signd = abs(u + b_) - 1 / lamda
     signd.clip(0, out=signd)
     signd *= xp.sign(u + b_)
@@ -137,13 +143,13 @@ def _middle(u, b_, lamda):
     return signd
 
 
-def _bfbf(b_, c0, c1, x, lamda):
+def _bfbf(b_: float, c0: int, c1: int, x: np.ndarray, lamda: int) -> np.ndarray:
     u = _back_diff(_forward_diff(x, c0), c1)
     signd = _middle(u, b_, lamda)
     return _back_diff(_forward_diff(signd - b_, c1), c0)
 
 
-def _ffbb(b_, c0, c1, x, lamda):
+def _ffbb(b_: float, c0: int, c1: int, x: np.ndarray, lamda: int) -> np.ndarray:
     u = _forward_diff(_forward_diff(x, c0), c1)
     signd = _middle(u, b_, lamda)
     return 2 * _back_diff(_back_diff(signd - b_, c1), c0)

@@ -1,21 +1,23 @@
 import os
 from contextlib import contextmanager
-from tempfile import NamedTemporaryFile
-from typing import Optional, Sequence
+from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
+from typing import TYPE_CHECKING, Any, Iterator, Optional, Sequence
 
 from pydantic import BaseModel, Field, FilePath
 
+if TYPE_CHECKING:
+    from tempfile import _TemporaryFileWrapper
+
 
 @contextmanager
-def temp_config(**kwargs):
+def temp_config(**kwargs: Any) -> Iterator[_TemporaryFileWrapper]:
     """A context manager that creates a temporary config file for SIMReconstructor.
 
     `**kwargs` should be valid keyword arguments for :class:`ReconParams`.
     """
-
     params = ReconParams(**kwargs)
     tf = NamedTemporaryFile(delete=False)
-    tf.file.write(params.to_config().encode())  # type: ignore
+    tf.file.write(params.to_config().encode())
     tf.close()
     try:
         yield tf
@@ -111,7 +113,7 @@ class ReconParams(BaseModel):
         "(may cause issues with bioformats)",
     )
 
-    def to_config(self, exclude_unset=True):
+    def to_config(self, exclude_unset: bool = True) -> str:
         lines = []
         for k, v in self.dict(exclude_unset=exclude_unset).items():
             if k == "k0angles":

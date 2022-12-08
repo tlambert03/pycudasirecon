@@ -3,7 +3,10 @@ from ._otf import make_otf
 from ._recon_params import ReconParams
 from .sim_reconstructor import SIMReconstructor, reconstruct
 
-__version__ = "0.1.0"
+try:
+    from ._version import version as __version__
+except ImportError:
+    __version__ = "unknown"
 
 __all__ = [
     "SIMReconstructor",

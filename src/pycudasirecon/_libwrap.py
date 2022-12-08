@@ -8,6 +8,7 @@ from ctypes import (
     c_uint,
     c_ushort,
 )
+from unittest.mock import MagicMock
 
 import numpy as np
 
@@ -16,10 +17,17 @@ from ._ctyped import CPointer, Library
 try:
     lib = Library("libcudasirecon")
 except FileNotFoundError:
-    raise FileNotFoundError(
-        "Unable to find library 'libcudasirecon'\n"
-        "Please try `conda install -c conda-forge cudasirecon`."
-    ) from None
+    import sys
+
+    if "build" in sys.argv and "docs" in sys.argv:
+        from unittest.mock import MagicMock
+
+        lib = MagicMock()
+    else:
+        raise FileNotFoundError(
+            "Unable to find library 'libcudasirecon'\n"
+            "Please try `conda install -c conda-forge cudasirecon`."
+        ) from None
 
 
 @lib.function
@@ -54,7 +62,7 @@ def SR_getResult(self: CPointer, result: np.ndarray) -> None:
 
 @lib.function
 def SR_getReconParams(self: CPointer) -> CPointer:
-    """Get current reconstruction parameters"""
+    """Get current reconstruction parameters."""
 
 
 @lib.function
