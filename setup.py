@@ -20,5 +20,5 @@ sys.exit(1)
 
 setup(  # noqa
     name="pycudasirecon",
-    install_requires=["numpy", "pydantic", "tifffile", "typing_extensions"]
+    install_requires=["numpy", "pydantic", "tifffile", "typing_extensions"],
 )

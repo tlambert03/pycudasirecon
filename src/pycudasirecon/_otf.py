@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from contextlib import contextmanager
 from pathlib import Path
 from subprocess import run
 from tempfile import NamedTemporaryFile
-from typing import Iterator, Optional, Tuple, Union
+from typing import Any, Iterator, Union
 
 import numpy as np
 import tifffile
@@ -11,21 +13,21 @@ MAKEOTF = "makeotf"  # binary name for subprocess
 PathLike = Union[str, Path]
 
 
-def make_otf(
-    psf: Union[np.ndarray, PathLike],
+def make_otf(  # noqa: C901
+    psf: np.ndarray | PathLike,
     out_file: str,
     nphases: int = 5,
     beaddiam: float = 0.12,
     angle: float = 1.57,
     ls: float = 0.2,
     nocompen: bool = False,
-    fixorigin: Tuple[int, int] = (2, 9),
+    fixorigin: tuple[int, int] = (2, 9),
     na: float = 1.4,
     nimm: float = 1.515,
-    leavekz: Tuple[int, int, int] = (0, 0, 0),
-    background: Optional[int] = None,
-):
-    """make OTF file from PSF.
+    leavekz: tuple[int, int, int] = (0, 0, 0),
+    background: int | None = None,
+) -> None:
+    """Make OTF file from PSF.
 
     Note: currently there is no direct C-buffer access when making an OTF... so data
     must be read from and written to actual files. Providing psf as `path/to/psf.tif`
@@ -72,7 +74,7 @@ def make_otf(
         psf_path = str(psf)
     else:
         raise FileNotFoundError(f"Could not find psf at path: {psf}")
-    
+
     # convert local kwargs to `makeotf` compatible arguments
     cmd = [MAKEOTF, psf_path, str(out_file)]
     for key, value in kwargs.items():
@@ -99,10 +101,13 @@ def make_otf(
 
 @contextmanager
 def temporary_otf(
-    psf: Optional[np.ndarray] = None, otf: Optional[np.ndarray] = None, **kwargs
+    psf: np.ndarray | PathLike | None = None,
+    otf: np.ndarray | None = None,
+    **kwargs: Any,
 ) -> Iterator[str]:
     """Convenience to generate a temporary OTF file from a PSF file or array."""
-    assert (psf is not None) or (otf is not None), "Must provide either psf or otf"
+    if (psf is None) and (otf is None):
+        raise ValueError("Must provide either psf or otf")
 
     temp_otf = NamedTemporaryFile(suffix=".tif", delete=False)
     temp_otf.close()

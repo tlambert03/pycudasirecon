@@ -1,6 +1,4 @@
-"""
-simple wrapper so that we can still import this package (for docs) without the library.
-"""
+"""Wrapper so that we can still import this package (for docs) without the library."""
 
 import typing as _t
 
@@ -14,7 +12,7 @@ except FileNotFoundError as e:
     warnings.warn(f"\n{e}\n\nMost functionality will fail!\n")
 
     class _stub:
-        def __getattr__(self, name):
+        def __getattr__(self, name: str) -> _t.Any:
             raise t
 
     lib = _stub()

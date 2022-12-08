@@ -54,7 +54,7 @@ def SR_getResult(self: CPointer, result: np.ndarray) -> None:
 
 @lib.function
 def SR_getReconParams(self: CPointer) -> CPointer:
-    """Get current reconstruction parameters"""
+    """Get current reconstruction parameters."""
 
 
 @lib.function

@@ -70,7 +70,7 @@ extend-select = [
     "F", # flakes
     "D", # pydocstyle
     "I", # isort
-    "U", # pyupgrade
+    "UP", # pyupgrade
     # "N",  # pep8-naming
     "S",    # bandit
     "C",    # flake8-comprehensions
@@ -107,6 +107,9 @@ disallow_subclassing_any = false
 show_error_codes = true
 pretty = true
 
+[[tool.mypy.overrides]]
+module = ['pycudasirecon._napari', "pycudasirecon._libwrap"]
+ignore_errors = true
 
 # https://coverage.readthedocs.io/en/6.4/config.html
 [tool.coverage.report]

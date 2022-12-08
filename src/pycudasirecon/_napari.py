@@ -1,15 +1,13 @@
+import functools
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Tuple, Annotated
-
+from typing import TYPE_CHECKING, Annotated, Any, Tuple
 
 import numpy as np
 from magicgui import magic_factory
-from scipy.fft import fftn, fftshift, ifftshift, rfftn, fftfreq
-from typing_extensions import Annotated
 from napari.components import ViewerModel
 from napari.qt import QtViewer
-import functools
-import time
+from scipy.fft import fftfreq, fftn, fftshift, ifftshift, rfftn
+from typing_extensions import Annotated
 
 if TYPE_CHECKING:
     import napari.layers
@@ -18,15 +16,16 @@ if TYPE_CHECKING:
 
 
 @functools.lru_cache(maxsize=None)
-def _ffreqs(shape, spacing):
+def _ffreqs(shape: int, spacing: int) -> np.ndarray:
     return 1 / (fftfreq(shape, spacing) + np.finfo(float).eps)
 
 
 def _split_paz(
-    image: "np.ndarray", order: str = "pza", nphases=5, nangles=3
+    image: "np.ndarray", order: str = "pza", nphases: int = 5, nangles: int = 3
 ) -> np.ndarray:
-    """Return 5 dimensional array with shape (nphases, nangles, nz, ny, nx)"""
-    assert image.ndim == 3, "image must be 3D"
+    """Return 5 dimensional array with shape (nphases, nangles, nz, ny, nx)."""
+    if image.ndim != 3:
+        raise ValueError("image must be 3D")
     _order = list(reversed(order.lower()))
     pax = _order.index("p")
     aax = _order.index("a")
@@ -38,11 +37,13 @@ def _split_paz(
     return img.transpose((pax, aax, zax, -2, -1))
 
 
-def _fft(data: np.ndarray, r: bool = False, **kwargs):
+def _fft(data: np.ndarray, r: bool = False, **kwargs: Any) -> np.ndarray:
     return ifftshift((rfftn if r else fftn)(fftshift(data), **kwargs))
 
 
-def _pseudo_wf(image: "np.ndarray", order: str = "pza", nphases=5, nangles=3):
+def _pseudo_wf(
+    image: "np.ndarray", order: str = "pza", nphases: int = 5, nangles: int = 3
+) -> np.ndarray:
     # TODO: deal with 4+ dims
     return _split_paz(image, order, nphases, nangles).mean((0, 1))
 
@@ -62,8 +63,10 @@ def _extract_orders(pazyx: np.ndarray) -> np.ndarray:
     return fpaz[:, 1]  # adds the mid freq and high freq together
 
 
-def build_rgb_fft(data: np.ndarray, order="pza", nphases=5, nangles=3):
-    """Return RGB image of FFT of data"""
+def build_rgb_fft(
+    data: np.ndarray, order: str = "pza", nphases: int = 5, nangles: int = 3
+) -> np.ndarray:
+    """Return RGB image of FFT of data."""
     pazyx = _split_paz(data, order, nphases, nangles)
     orders = _extract_orders(pazyx)
     rgb = orders.sum(axis=0).transpose()
@@ -72,7 +75,7 @@ def build_rgb_fft(data: np.ndarray, order="pza", nphases=5, nangles=3):
     return rgb**0.6
 
 
-def init(self):
+def init(self: Any) -> None:
     from qtpy.QtWidgets import QSizePolicy
 
     for wdg in self.k0angles:
@@ -100,7 +103,7 @@ def init(self):
     @self.k0angles.changed.connect
     @self.ls.changed.connect
     @self.xyres.changed.connect
-    def draw_spots():
+    def draw_spots() -> None:
         if img.data is None:
             return
 
@@ -119,7 +122,7 @@ def init(self):
     @self.image.changed.connect
     @self.format.changed.connect
     @self.nphases.changed.connect
-    def on_image_change():
+    def on_image_change() -> None:
         if self.image.value is None:
             return
 
@@ -166,9 +169,11 @@ def sim_reconstruct(
     _otf = str(params.pop("otf"))
     _params = ReconParams(otfRA=True, **params)
     data = reconstruct(image.data, otf=_otf, **_params.dict(exclude_unset=True))
-    meta = dict(
-        scale=list(image.scale), name=f"{image.name} (recon)", blending="additive"
-    )
+    meta: dict = {
+        "scale": list(image.scale),
+        "name": f"{image.name} (recon)",
+        "blending": "additive",
+    }
 
     meta["scale"][-1] = meta["scale"][-1] / 2
     meta["scale"][-2] = meta["scale"][-2] / 2
