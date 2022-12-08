@@ -205,15 +205,15 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="hessian-denoising">
 <h1>Hessian Denoising<a class="headerlink" href="#hessian-denoising" title="Permalink to this headline">#</a></h1>
-<section id="module-pycudasirecon">
-<span id="api"></span><h2>API<a class="headerlink" href="#module-pycudasirecon" title="Permalink to this headline">#</a></h2>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="pycudasirecon.hessian_denoise">
 <span class="sig-prename descclassname"><span class="pre">pycudasirecon.</span></span><span class="sig-name descname"><span class="pre">hessian_denoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lamda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/_hessian.html#hessian_denoise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.hessian_denoise" title="Permalink to this definition">#</a></dt>
 <dd><p>Hessian (Split-Bregman) SIM denoise algorithm.</p>
 <p>May be applied to images images reconstructed with Wiener method to further
 reduce noise.</p>
-<p>Adapted from MATLAB code published in Huang et al 2018 <a href="#id1"><span class="problematic" id="id1">[1]_</span></a>.
+<p>Adapted from MATLAB code published in Huang et al 2018.
 See supplementary information (fig 7) for details on the paramaeters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -238,15 +238,14 @@ by default 1</p></li>
 </dl>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
 <dd><p>Huang, X., Fan, J., Li, L. et al. Fast, long-term, super-resolution imaging
-with Hessian structured illumination microscopy. Nat Biotechnol 36, 451–459
+with Hessian structured illumination microscopy. Nat Biotechnol 36, 451-459
 (2018). <a class="reference external" href="https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/nbt.4115">https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/nbt.4115</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<hr class="footnotes docutils" />
 </section>
 </section>
 
@@ -319,7 +318,7 @@ with Hessian structured illumination microscopy. Nat Biotechnol 36, 451–459
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Hessian Denoising</a><ul>
-<li><a class="reference internal" href="#module-pycudasirecon">API</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
 </ul>
 </li>
 </ul>

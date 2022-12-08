@@ -228,17 +228,30 @@ by default None</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="pycudasirecon.SIMReconstructor.get_image_params">
 <span class="sig-name descname"><span class="pre">get_image_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.get_image_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.get_image_params" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Return the current image parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageParams</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pycudasirecon.SIMReconstructor.get_recon_params">
 <span class="sig-name descname"><span class="pre">get_recon_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.get_recon_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.get_recon_params" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Return the current reconstruction parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ReconParams</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pycudasirecon.SIMReconstructor.get_result">
 <span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.get_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.get_result" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Return the current reconstruction result.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
 </dd>
@@ -248,12 +261,19 @@ by default None</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="pycudasirecon.SIMReconstructor.process_volume">
 <span class="sig-name descname"><span class="pre">process_volume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.process_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.process_volume" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Process the current volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pycudasirecon.SIMReconstructor.set_raw">
 <span class="sig-name descname"><span class="pre">set_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.set_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.set_raw" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Assign <cite>img</cite> as the raw data to be reconstructed.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
@@ -270,14 +290,16 @@ by default None</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>np.ndarray</em>) – The array to reconstruct</p></li>
-<li><p><strong>otf_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – OTF file to use for reconstruction.  Either PSF or OTF must be provided,
+<li><p><strong>otf</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – OTF to use for reconstruction. Either PSF or OTF must be provided,
 by default None</p></li>
 <li><p><strong>psf</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – PSF to use for reconstruction. Either PSF or OTF must be provided,
 by default None</p></li>
 <li><p><strong>makeotf_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – If <cite>psf</cite> is provided, these kwargs will be passed to the
 <a class="reference internal" href="otf.html#pycudasirecon.make_otf" title="pycudasirecon.make_otf"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_otf()</span></code></a> function when generating the OTF.
 See <cite>make_otf</cite> docstring for details.</p></li>
-<li><p><strong>kwargs</strong> (<em>**</em>) – Reconstruction parameters.  See <code class="xref py py-class docutils literal notranslate"><span class="pre">ReconParams</span></code> for valid
+<li><p><strong>otf_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – OTF file to use for reconstruction.  Either PSF or OTF must be provided,
+by default None</p></li>
+<li><p><strong>**kwargs</strong> (<em>Any</em>) – Reconstruction parameters.  See <code class="xref py py-class docutils literal notranslate"><span class="pre">ReconParams</span></code> for valid
 keys.</p></li>
 </ul>
 </dd>

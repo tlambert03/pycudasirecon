@@ -202,7 +202,9 @@
         </div>
         <article role="main">
           <h1>Source code for pycudasirecon._hessian</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -214,13 +216,19 @@
 <span class="n">xp</span> <span class="o">=</span> <span class="n">np</span> <span class="k">if</span> <span class="n">cupy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cupy</span>
 
 
-<div class="viewcode-block" id="hessian_denoise"><a class="viewcode-back" href="../../hessian.html#pycudasirecon.hessian_denoise">[docs]</a><span class="k">def</span> <span class="nf">hessian_denoise</span><span class="p">(</span><span class="n">initial</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lamda</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="hessian_denoise"><a class="viewcode-back" href="../../hessian.html#pycudasirecon.hessian_denoise">[docs]</a><span class="k">def</span> <span class="nf">hessian_denoise</span><span class="p">(</span>
+    <span class="n">initial</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">mu</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span><span class="p">,</span>
+    <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">lamda</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Hessian (Split-Bregman) SIM denoise algorithm.</span>
 
 <span class="sd">    May be applied to images images reconstructed with Wiener method to further</span>
 <span class="sd">    reduce noise.</span>
 
-<span class="sd">    Adapted from MATLAB code published in Huang et al 2018 [1]_.</span>
+<span class="sd">    Adapted from MATLAB code published in Huang et al 2018.</span>
 <span class="sd">    See supplementary information (fig 7) for details on the paramaeters.</span>
 
 <span class="sd">    Parameters</span>
@@ -247,11 +255,9 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-
 <span class="sd">    .. [1] Huang, X., Fan, J., Li, L. et al. Fast, long-term, super-resolution imaging</span>
-<span class="sd">           with Hessian structured illumination microscopy. Nat Biotechnol 36, 451–459</span>
+<span class="sd">           with Hessian structured illumination microscopy. Nat Biotechnol 36, 451-459</span>
 <span class="sd">           (2018). https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/nbt.4115</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">xp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">cupy</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;could not import cupy... falling back to numpy &amp; cpu.&quot;</span><span class="p">)</span>
@@ -287,7 +293,7 @@
         <span class="n">frac</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span><span class="n">frac</span><span class="p">)</span>
 
         <span class="n">divisor</span> <span class="o">=</span> <span class="n">divide</span> <span class="k">if</span> <span class="n">ii</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">_mu_d_lamda</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">(</span><span class="n">frac</span> <span class="o">/</span> <span class="n">divisor</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">(</span><span class="n">frac</span> <span class="o">/</span> <span class="n">divisor</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>  <span class="c1"># type: ignore</span>
 
         <span class="n">frac</span> <span class="o">=</span> <span class="n">_mu_d_lamda</span> <span class="o">*</span> <span class="n">initial</span>
         <span class="n">frac</span> <span class="o">+=</span> <span class="n">_bfbf</span><span class="p">(</span><span class="n">bs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">lamda</span><span class="p">)</span>
@@ -302,38 +308,38 @@
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span> <span class="n">initial</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
     <span class="n">x</span> <span class="o">*=</span> <span class="n">ymax</span>
 
-    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span></div>
+    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>  <span class="c1"># type: ignore</span></div>
 
 
-<span class="k">def</span> <span class="nf">_fft_of_diff</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_fft_of_diff</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># FFTs of difference operator</span>
     <span class="n">_v0</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
     <span class="n">_v1</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
     <span class="n">divide</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">_fconj</span><span class="p">(</span><span class="n">_v0</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="n">shape</span><span class="p">)</span>
         <span class="o">+</span> <span class="n">_fconj</span><span class="p">(</span><span class="n">_v0</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">shape</span><span class="p">)</span>
-        <span class="o">+</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">_fconj</span><span class="p">(</span><span class="n">_v0</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">shape</span><span class="p">)</span>
+        <span class="o">+</span> <span class="p">(</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">_fconj</span><span class="p">(</span><span class="n">_v0</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">shape</span><span class="p">)</span>
         <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_fconj</span><span class="p">(</span><span class="n">_v1</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="n">shape</span><span class="p">)</span>
         <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">_fconj</span><span class="p">(</span><span class="n">_v1</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="n">shape</span><span class="p">)</span>
         <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">_fconj</span><span class="p">(</span><span class="n">_v1</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">shape</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">divide</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="n">divide</span><span class="o">.</span><span class="n">real</span>  <span class="c1"># type: ignore</span>
 
 
-<span class="k">def</span> <span class="nf">_fconj</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_fconj</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">tmp_fft</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">tmp_fft</span> <span class="o">*</span> <span class="n">xp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">tmp_fft</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tmp_fft</span> <span class="o">*</span> <span class="n">xp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">tmp_fft</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
 
-<span class="k">def</span> <span class="nf">_forward_diff</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">xp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_forward_diff</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">xp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
 
-<span class="k">def</span> <span class="nf">_back_diff</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">xp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_back_diff</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">xp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
 
-<span class="k">def</span> <span class="nf">_middle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">b_</span><span class="p">,</span> <span class="n">lamda</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_middle</span><span class="p">(</span><span class="n">u</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b_</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lamda</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">signd</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="n">b_</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">lamda</span>
     <span class="n">signd</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">signd</span><span class="p">)</span>
     <span class="n">signd</span> <span class="o">*=</span> <span class="n">xp</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="n">b_</span><span class="p">)</span>
@@ -341,13 +347,13 @@
     <span class="k">return</span> <span class="n">signd</span>
 
 
-<span class="k">def</span> <span class="nf">_bfbf</span><span class="p">(</span><span class="n">b_</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">lamda</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_bfbf</span><span class="p">(</span><span class="n">b_</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">c0</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">c1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lamda</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">_back_diff</span><span class="p">(</span><span class="n">_forward_diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c0</span><span class="p">),</span> <span class="n">c1</span><span class="p">)</span>
     <span class="n">signd</span> <span class="o">=</span> <span class="n">_middle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">b_</span><span class="p">,</span> <span class="n">lamda</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_back_diff</span><span class="p">(</span><span class="n">_forward_diff</span><span class="p">(</span><span class="n">signd</span> <span class="o">-</span> <span class="n">b_</span><span class="p">,</span> <span class="n">c1</span><span class="p">),</span> <span class="n">c0</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_ffbb</span><span class="p">(</span><span class="n">b_</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">lamda</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_ffbb</span><span class="p">(</span><span class="n">b_</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">c0</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">c1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lamda</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">_forward_diff</span><span class="p">(</span><span class="n">_forward_diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c0</span><span class="p">),</span> <span class="n">c1</span><span class="p">)</span>
     <span class="n">signd</span> <span class="o">=</span> <span class="n">_middle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">b_</span><span class="p">,</span> <span class="n">lamda</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_back_diff</span><span class="p">(</span><span class="n">_back_diff</span><span class="p">(</span><span class="n">signd</span> <span class="o">-</span> <span class="n">b_</span><span class="p">,</span> <span class="n">c1</span><span class="p">),</span> <span class="n">c0</span><span class="p">)</span>
