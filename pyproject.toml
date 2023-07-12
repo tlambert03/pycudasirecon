@@ -131,7 +131,6 @@ ignore = [
     ".pre-commit-config.yaml",
     ".ruff_cache/**/*",
     "tests/**/*",
-    "setup.py",
     "docs/**/*",
     "environment.yml",
     "src/pycudasirecon/_version.py"
