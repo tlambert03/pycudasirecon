@@ -34,4 +34,5 @@ repos:
         additional_dependencies:
           - magicgui
           - scipy
+          - pydantic
         files: "^src/"

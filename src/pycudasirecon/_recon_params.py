@@ -1,9 +1,11 @@
 import os
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
-from typing import Any, Iterator, Optional, Sequence
+from typing import Any, Iterator, Optional, Tuple
 
 from pydantic import BaseModel, Field, FilePath
+
+from ._util import _model_dump
 
 
 @contextmanager
@@ -50,10 +52,10 @@ class ReconParams(BaseModel):
     )
     background: float = Field(0, description="camera readout background")
     wiener: float = Field(0.01, description="Wiener constant")
-    forcemodamp: Optional[Sequence[float]] = Field(
+    forcemodamp: Optional[Tuple[float, ...]] = Field(
         None, description="modamps forced to these values"
     )
-    k0angles: Optional[Sequence[float]] = Field(
+    k0angles: Optional[Tuple[float, ...]] = Field(
         None, description="user given pattern vector k0 angles for all directions"
     )
     otfRA: bool = Field(True, description="using rotationally averaged OTF")
@@ -112,7 +114,7 @@ class ReconParams(BaseModel):
 
     def to_config(self, exclude_unset: bool = True) -> str:
         lines = []
-        for k, v in self.dict(exclude_unset=exclude_unset).items():
+        for k, v in _model_dump(self, exclude_unset=exclude_unset).items():
             if k == "k0angles":
                 v = ",".join(str(x) for x in v)
             if isinstance(v, bool):

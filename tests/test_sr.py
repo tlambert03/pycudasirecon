@@ -7,6 +7,7 @@ import pytest
 import tifffile as tf
 from pycudasirecon import ReconParams, make_otf, reconstruct, sim_reconstructor
 from pycudasirecon._otf import temporary_otf
+from pycudasirecon._util import _model_dump
 
 try:
     DATA = Path(__file__).parent / "data"
@@ -55,13 +56,15 @@ def _close_enough(a, b, max_mean=0.3, max_std=0.06):
 
 def test_reconstruct_with_file_otf(params):
     raw = tf.imread(RAW)
-    result = reconstruct(raw, otf=OTF, **params.dict(exclude_unset=True))
+    result = reconstruct(raw, otf=OTF, **_model_dump(params, exclude_unset=True))
     assert _close_enough(EXPECTED, result)
 
 
 def test_reconstruct_with_array_otf(params):
     raw = tf.imread(RAW)
-    result = reconstruct(raw, otf=tf.imread(OTF), **params.dict(exclude_unset=True))
+    result = reconstruct(
+        raw, otf=tf.imread(OTF), **_model_dump(params, exclude_unset=True)
+    )
     assert _close_enough(EXPECTED, result)
 
 
@@ -70,7 +73,7 @@ def test_reconstruct_with_file_psf(params):
         tf.imread(RAW),
         psf=PSF,
         makeotf_kwargs={"fixorigin": (3, 20)},
-        **params.dict(exclude_unset=True),
+        **_model_dump(params, exclude_unset=True),
     )
     assert _close_enough(EXPECTED, result)
 
@@ -80,7 +83,7 @@ def test_reconstruct_with_array_psf(params):
         tf.imread(RAW),
         psf=tf.imread(PSF),
         makeotf_kwargs={"fixorigin": (3, 20)},
-        **params.dict(exclude_unset=True),
+        **_model_dump(params, exclude_unset=True),
     )
     assert _close_enough(EXPECTED, result)
 

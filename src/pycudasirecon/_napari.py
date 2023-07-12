@@ -9,6 +9,8 @@ from napari.qt import QtViewer
 from scipy.fft import fftfreq, fftn, fftshift, ifftshift, rfftn
 from typing_extensions import Annotated
 
+from ._util import _model_dump
+
 if TYPE_CHECKING:
     import napari.layers
     import napari.types
@@ -167,7 +169,7 @@ def sim_reconstruct(
     image = params.pop("image")
     _otf = str(params.pop("otf"))
     _params = ReconParams(otfRA=True, **params)
-    data = reconstruct(image.data, otf=_otf, **_params.dict(exclude_unset=True))
+    data = reconstruct(image.data, otf=_otf, **_model_dump(_params, exclude_unset=True))
     meta: dict = {
         "scale": list(image.scale),
         "name": f"{image.name} (recon)",

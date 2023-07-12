@@ -5,7 +5,10 @@ import sys
 import tempfile
 from contextlib import contextmanager
 from functools import partial
-from typing import Any, Iterator
+from typing import TYPE_CHECKING, Any, Iterator
+
+if TYPE_CHECKING:
+    from pydantic import BaseModel
 
 WIN = os.name == "nt"
 if WIN:
@@ -61,3 +64,9 @@ def stdout_redirected(stream: Any = os.devnull) -> Iterator[None]:
 
 LOG = io.BytesIO()
 caplog = partial(stdout_redirected, LOG)
+
+
+def _model_dump(obj: "BaseModel", **kwargs: Any) -> dict:
+    if hasattr(obj, "model_dump"):
+        return obj.model_dump(**kwargs)
+    return obj.dict(**kwargs)
