@@ -1,3 +1,5 @@
+"""3D-SIM recontrustrion."""
+
 from ._hessian import hessian_denoise
 from ._otf import make_otf
 from ._recon_params import ReconParams

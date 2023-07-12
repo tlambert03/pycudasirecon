@@ -1,6 +1,6 @@
 import functools
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, Any, Tuple
+from typing import TYPE_CHECKING, Any, Tuple
 
 import numpy as np
 from magicgui import magic_factory
@@ -12,7 +12,6 @@ from typing_extensions import Annotated
 if TYPE_CHECKING:
     import napari.layers
     import napari.types
-    import numpy as np
 
 
 @functools.lru_cache(maxsize=None)
@@ -30,7 +29,7 @@ def _split_paz(
     pax = _order.index("p")
     aax = _order.index("a")
     zax = _order.index("z")
-    reshp = [-1, -1, -1] + list(image.shape[-2:])
+    reshp = [-1, -1, -1, *list(image.shape[-2:])]
     reshp[pax] = nphases
     reshp[aax] = nangles
     img = image.reshape(reshp)

@@ -56,7 +56,9 @@ def hessian_denoise(
            (2018). https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/nbt.4115
     """
     if xp is not cupy:
-        warnings.warn("could not import cupy... falling back to numpy & cpu.")
+        warnings.warn(
+            "could not import cupy... falling back to numpy & cpu.", stacklevel=2
+        )
 
     initial = xp.asarray(initial, dtype="single")
 
@@ -64,7 +66,8 @@ def hessian_denoise(
         sigma = 0
         warnings.warn(
             "Number of Z/T planes is smaller than 3, the t and z-axis of "
-            "Hessian was turned off(sigma=0)"
+            "Hessian was turned off(sigma=0)",
+            stacklevel=2,
         )
         if initial.ndim == 2:
             initial = xp.tile(initial, [3, 1, 1])
@@ -81,7 +84,7 @@ def hessian_denoise(
 
     divide = (_fft_of_diff(sizex, sigma) + _mu_d_lamda).astype(xp.float32)
 
-    bs = xp.zeros((6,) + sizex, "float32")
+    bs = xp.zeros((6, *sizex), "float32")
     x = xp.zeros(sizex, "int32")
     frac = _mu_d_lamda * initial
 

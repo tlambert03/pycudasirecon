@@ -70,7 +70,7 @@ def test_reconstruct_with_file_psf(params):
         tf.imread(RAW),
         psf=PSF,
         makeotf_kwargs={"fixorigin": (3, 20)},
-        **params.dict(exclude_unset=True)
+        **params.dict(exclude_unset=True),
     )
     assert _close_enough(EXPECTED, result)
 
@@ -80,7 +80,7 @@ def test_reconstruct_with_array_psf(params):
         tf.imread(RAW),
         psf=tf.imread(PSF),
         makeotf_kwargs={"fixorigin": (3, 20)},
-        **params.dict(exclude_unset=True)
+        **params.dict(exclude_unset=True),
     )
     assert _close_enough(EXPECTED, result)
 

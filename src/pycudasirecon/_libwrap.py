@@ -1,3 +1,4 @@
+import sys
 from ctypes import (
     Structure,
     c_bool,
@@ -8,6 +9,7 @@ from ctypes import (
     c_uint,
     c_ushort,
 )
+from typing import ClassVar, List, Tuple
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -17,11 +19,7 @@ from ._ctyped import CPointer, Library
 try:
     lib = Library("libcudasirecon")
 except FileNotFoundError:
-    import sys
-
     if "build" in sys.argv and "docs" in sys.argv:
-        from unittest.mock import MagicMock
-
         lib = MagicMock()
     else:
         raise FileNotFoundError(
@@ -92,7 +90,7 @@ def SR_closeFiles(self: CPointer) -> None:
 
 
 class ReconParams(Structure):
-    _fields_ = [
+    _fields_: ClassVar[List[Tuple[str, type]]] = [
         ("k0startangle", c_float),
         ("linespacing", c_float),
         ("na", c_float),
@@ -144,7 +142,7 @@ class ReconParams(Structure):
 
 
 class ImageParams(Structure):
-    _fields_ = [
+    _fields_: ClassVar[List[Tuple[str, type]]] = [
         ("nx", c_int),  # image's width after deskewing or same as "nx_raw"
         ("nx_raw", c_int),  # raw image's width before deskewing
         ("ny", c_int),

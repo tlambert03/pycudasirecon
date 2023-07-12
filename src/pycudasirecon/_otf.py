@@ -13,7 +13,7 @@ MAKEOTF = "makeotf"  # binary name for subprocess
 PathLike = Union[str, Path]
 
 
-def make_otf(  # noqa: C901
+def make_otf(
     psf: np.ndarray | PathLike,
     out_file: str,
     nphases: int = 5,
@@ -93,7 +93,7 @@ def make_otf(  # noqa: C901
             cmd.append(str(value))
 
     try:
-        run(cmd)
+        run(cmd)  # noqa: S603
     finally:
         if temp_psf is not None:
             Path(temp_psf.name).unlink(missing_ok=True)
@@ -105,7 +105,7 @@ def temporary_otf(
     otf: np.ndarray | None = None,
     **kwargs: Any,
 ) -> Iterator[str]:
-    """Convenience to generate a temporary OTF file from a PSF file or array."""
+    """Generate a temporary OTF file from a PSF file or array."""
     if (psf is None) and (otf is None):
         raise ValueError("Must provide either psf or otf")
 

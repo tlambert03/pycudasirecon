@@ -1,46 +1,15 @@
 import ctypes
 import functools
 import os
-import sys
 from ctypes.util import find_library
 from inspect import Parameter, Signature, signature
 from typing import Any, Callable, NewType, Optional, Type
 
 import numpy as np
-from typing_extensions import Annotated
+from typing_extensions import Annotated, get_args, get_origin
 
 ndarray_uint16 = Annotated[np.ndarray, "uint16"]
 CPointer = NewType("CPointer", int)
-
-if sys.version_info >= (3, 7):
-    from typing_extensions import Annotated, get_args, get_origin
-else:
-    # TODO: remove when py3.6 support is dropped
-    from typing import Generic, GenericMeta
-
-    from typing_extensions import Annotated, AnnotatedMeta
-
-    def get_origin(tp):
-        if isinstance(tp, AnnotatedMeta):
-            return Annotated
-        if isinstance(tp, GenericMeta):
-            return tp.__origin__
-        if tp is Generic:
-            return Generic
-        return None
-
-    def get_args(tp):
-        """Get type arguments with all substitutions performed."""
-        if isinstance(tp, AnnotatedMeta):
-            return (tp.__args__[0],) + tp.__metadata__
-        if isinstance(tp, GenericMeta):
-            import collections
-
-            res = tp.__args__
-            if tp.__origin__ is collections.abc.Callable and res[0] is not Ellipsis:
-                res = (list(res[:-1]), res[-1])
-            return res
-        return ()
 
 
 class Library:
@@ -87,7 +56,6 @@ class Library:
 
 
 def cast_type(hint: Type) -> Optional[Type]:
-
     if isinstance(hint, str):
         raise ValueError("forward ref typehints not supported")
 

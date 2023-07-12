@@ -9,7 +9,7 @@ except FileNotFoundError as e:
     import warnings
 
     t = e
-    warnings.warn(f"\n{e}\n\nMost functionality will fail!\n")
+    warnings.warn(f"\n{e}\n\nMost functionality will fail!\n", stacklevel=2)
 
     class _stub:
         def __getattr__(self, name: str) -> _t.Any:

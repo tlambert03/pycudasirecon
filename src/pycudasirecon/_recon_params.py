@@ -1,17 +1,14 @@
 import os
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
-from typing import TYPE_CHECKING, Any, Iterator, Optional, Sequence
+from typing import Any, Iterator, Optional, Sequence
 
 from pydantic import BaseModel, Field, FilePath
-
-if TYPE_CHECKING:
-    from tempfile import _TemporaryFileWrapper
 
 
 @contextmanager
 def temp_config(**kwargs: Any) -> Iterator[_TemporaryFileWrapper]:
-    """A context manager that creates a temporary config file for SIMReconstructor.
+    """Create a temporary config file for SIMReconstructor.
 
     `**kwargs` should be valid keyword arguments for :class:`ReconParams`.
     """

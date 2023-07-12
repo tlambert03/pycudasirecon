@@ -57,11 +57,14 @@ def reconstruct(
         warnings.warn(
             'The "otf_file" argument is deprecated. Use "otf" instead.',
             DeprecationWarning,
+            stacklevel=2,
         )
 
     if otf is not None:
         if psf is not None:
-            warnings.warn("Both `otf` and `psf` provided, otf will be used.")
+            warnings.warn(
+                "Both `otf` and `psf` provided, otf will be used.", stacklevel=2
+            )
         if isinstance(otf, (str, Path)):
             if not Path(otf).exists():
                 raise FileNotFoundError(f"Provided `otf` does not exist: {otf}")
