@@ -1,19 +1,19 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Optical Transfer Functions" href="otf.html" /><link rel="prev" title="Installation" href="installation.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.0.2 and Furo 2023.03.27 -->
         <title>SIM Reconstruction - pycudasirecon</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -157,7 +157,7 @@
   <span class="sidebar-brand-text">pycudasirecon</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -204,16 +204,17 @@
         </div>
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="sim-reconstruction">
-<h1>SIM Reconstruction<a class="headerlink" href="#sim-reconstruction" title="Permalink to this headline">#</a></h1>
+<h1>SIM Reconstruction<a class="headerlink" href="#sim-reconstruction" title="Permalink to this heading">#</a></h1>
 <section id="module-pycudasirecon">
-<span id="api"></span><h2>API<a class="headerlink" href="#module-pycudasirecon" title="Permalink to this headline">#</a></h2>
+<span id="api"></span><h2>API<a class="headerlink" href="#module-pycudasirecon" title="Permalink to this heading">#</a></h2>
+<p>3D-SIM recontrustrion.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pycudasirecon.SIMReconstructor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycudasirecon.</span></span><span class="sig-name descname"><span class="pre">SIMReconstructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Main class for SIM reconstruction.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arg0</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>]</em><em>]</em>) – Either a numpy array of raw data, or a shape tuple (3 integers) that indicate
 the size of raw data (to be provided later with <cite>set_raw</cite>).</p></li>
@@ -221,7 +222,7 @@ the size of raw data (to be provided later with <cite>set_raw</cite>).</p></li>
 by default None</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If the array is not ndim==3 or shape is not a 3-tuple</p>
 </dd>
 </dl>
@@ -230,7 +231,7 @@ by default None</p></li>
 <span class="sig-name descname"><span class="pre">get_image_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.get_image_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.get_image_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the current image parameters.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageParams</span></code></p>
 </dd>
 </dl>
@@ -241,7 +242,7 @@ by default None</p></li>
 <span class="sig-name descname"><span class="pre">get_recon_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.get_recon_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.get_recon_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the current reconstruction parameters.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ReconParams</span></code></p>
 </dd>
 </dl>
@@ -252,7 +253,7 @@ by default None</p></li>
 <span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.get_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.get_result" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the current reconstruction result.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
 </dd>
 </dl>
@@ -263,7 +264,7 @@ by default None</p></li>
 <span class="sig-name descname"><span class="pre">process_volume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.process_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.process_volume" title="Permalink to this definition">#</a></dt>
 <dd><p>Process the current volume.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
@@ -274,7 +275,7 @@ by default None</p></li>
 <span class="sig-name descname"><span class="pre">set_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#SIMReconstructor.set_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.SIMReconstructor.set_raw" title="Permalink to this definition">#</a></dt>
 <dd><p>Assign <cite>img</cite> as the raw data to be reconstructed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
@@ -287,7 +288,7 @@ by default None</p></li>
 <span class="sig-prename descclassname"><span class="pre">pycudasirecon.</span></span><span class="sig-name descname"><span class="pre">reconstruct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">otf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">makeotf_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">otf_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycudasirecon/sim_reconstructor.html#reconstruct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pycudasirecon.reconstruct" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform SIM reconstruction on array.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>np.ndarray</em>) – The array to reconstruct</p></li>
 <li><p><strong>otf</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – OTF to use for reconstruction. Either PSF or OTF must be provided,
@@ -303,10 +304,10 @@ by default None</p></li>
 keys.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The reconstructed array.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
@@ -327,7 +328,7 @@ keys.</p></li>
             mode: "python"
         },
         kernelOptions: {
-            kernelName: "python3",
+            name: "python3",
             path: "./."
         },
         predefinedOutput: true
@@ -371,9 +372,7 @@ keys.</p></li>
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -407,15 +406,16 @@ keys.</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/design-tabs.js"></script>
     <script src="_static/scripts/furo.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"

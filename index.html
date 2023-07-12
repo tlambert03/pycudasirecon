@@ -1,19 +1,19 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.0.2 and Furo 2023.03.27 -->
         <title>pycudasirecon</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -157,7 +157,7 @@
   <span class="sidebar-brand-text">pycudasirecon</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -204,7 +204,7 @@
         </div>
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="pycudasirecon">
-<h1>pycudasirecon<a class="headerlink" href="#pycudasirecon" title="Permalink to this headline">#</a></h1>
+<h1>pycudasirecon<a class="headerlink" href="#pycudasirecon" title="Permalink to this heading">#</a></h1>
 <p>This package provides a python wrapper and convenience functions for
 <a class="reference external" href="https://github.com/scopetools/cudasirecon">cudasirecon</a>, which is a CUDA/C++
 implementation of Mats Gustafsson &amp; Lin Shao’s 3-beam SIM reconstruction software.
@@ -218,15 +218,15 @@ described in Huang 2008 <span id="id2">[<a class="reference internal" href="#id5
 <li><p>GPU-backed Hessian denoising</p></li>
 </ul>
 <section id="install">
-<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">#</a></h2>
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h2>
 <p>Install (Linux and Windows) from conda forge:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c conda-forge pycudasirecon
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>pycudasirecon
 </pre></div>
 </div>
 <p>see GPU requirements in <a class="reference internal" href="installation.html"><span class="doc std std-doc">Installation</span></a>.</p>
 </section>
 <section id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">#</a></h2>
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">#</a></h2>
 <p>If you have a PSF and an image volume and you just want to get started, check
 out the <a class="reference internal" href="sim.html#pycudasirecon.reconstruct" title="pycudasirecon.reconstruct"><code class="xref py py-func docutils literal notranslate"><span class="pre">pycudasirecon.reconstruct()</span></code></a> function, which should be able to handle most
 basic applications.</p>
@@ -247,16 +247,17 @@ basic applications.</p>
 <p>This library is in development … more details to follow.</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">#</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
 <div class="docutils container" id="id3">
-<dl class="citation">
-<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Mats G.L. Gustafsson, Lin Shao, Peter M. Carlton, C. J. Rachel Wang, Inna N. Golubovskaya, W. Zacheus Cande, David A. Agard, and John W. Sedat. Three-dimensional resolution doubling in wide-field fluorescence microscopy by structured illumination. <em>Biophysical Journal</em>, 94(12):4957–4970, June 2008. URL: <a class="reference external" href="https://doi.org/10.1529/biophysj.107.120345">https://doi.org/10.1529/biophysj.107.120345</a>, <a class="reference external" href="https://doi.org/10.1529/biophysj.107.120345">doi:10.1529/biophysj.107.120345</a>.</p>
-</dd>
-<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>Xiaoshuai Huang, Junchao Fan, Liuju Li, Haosen Liu, Runlong Wu, Yi Wu, Lisi Wei, Heng Mao, Amit Lal, Peng Xi, Liqiang Tang, Yunfeng Zhang, Yanmei Liu, Shan Tan, and Liangyi Chen. Fast, long-term, super-resolution imaging with hessian structured illumination microscopy. <em>Nature Biotechnology</em>, 36(5):451–459, April 2018. URL: <a class="reference external" href="https://doi.org/10.1038/nbt.4115">https://doi.org/10.1038/nbt.4115</a>, <a class="reference external" href="https://doi.org/10.1038/nbt.4115">doi:10.1038/nbt.4115</a>.</p>
-</dd>
-</dl>
+<div class="citation" id="id4" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Mats G.L. Gustafsson, Lin Shao, Peter M. Carlton, C. J. Rachel Wang, Inna N. Golubovskaya, W. Zacheus Cande, David A. Agard, and John W. Sedat. Three-dimensional resolution doubling in wide-field fluorescence microscopy by structured illumination. <em>Biophysical Journal</em>, 94(12):4957–4970, June 2008. URL: <a class="reference external" href="https://doi.org/10.1529/biophysj.107.120345">https://doi.org/10.1529/biophysj.107.120345</a>, <a class="reference external" href="https://doi.org/10.1529/biophysj.107.120345">doi:10.1529/biophysj.107.120345</a>.</p>
+</div>
+<div class="citation" id="id5" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Xiaoshuai Huang, Junchao Fan, Liuju Li, Haosen Liu, Runlong Wu, Yi Wu, Lisi Wei, Heng Mao, Amit Lal, Peng Xi, Liqiang Tang, Yunfeng Zhang, Yanmei Liu, Shan Tan, and Liangyi Chen. Fast, long-term, super-resolution imaging with hessian structured illumination microscopy. <em>Nature Biotechnology</em>, 36(5):451–459, April 2018. URL: <a class="reference external" href="https://doi.org/10.1038/nbt.4115">https://doi.org/10.1038/nbt.4115</a>, <a class="reference external" href="https://doi.org/10.1038/nbt.4115">doi:10.1038/nbt.4115</a>.</p>
+</div>
+</div>
 </div>
 </section>
 <div class="toctree-wrapper compound">
@@ -275,7 +276,7 @@ basic applications.</p>
             mode: "python"
         },
         kernelOptions: {
-            kernelName: "python3",
+            name: "python3",
             path: "./."
         },
         predefinedOutput: true
@@ -309,9 +310,7 @@ basic applications.</p>
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -347,15 +346,16 @@ basic applications.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/design-tabs.js"></script>
     <script src="_static/scripts/furo.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"

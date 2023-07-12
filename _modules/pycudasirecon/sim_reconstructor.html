@@ -1,18 +1,18 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.0.2 and Furo 2023.03.27 -->
         <title>pycudasirecon.sim_reconstructor - pycudasirecon</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -156,7 +156,7 @@
   <span class="sidebar-brand-text">pycudasirecon</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -228,7 +228,7 @@
     <span class="n">otf_file</span><span class="p">:</span> <span class="n">PathLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Perform SIM reconstruction on array.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform SIM reconstruction on array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -261,11 +261,14 @@
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s1">&#39;The &quot;otf_file&quot; argument is deprecated. Use &quot;otf&quot; instead.&#39;</span><span class="p">,</span>
             <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">otf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">psf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Both `otf` and `psf` provided, otf will be used.&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Both `otf` and `psf` provided, otf will be used.&quot;</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">otf</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">otf</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided `otf` does not exist: </span><span class="si">{</span><span class="n">otf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -283,7 +286,7 @@
 
 
 <div class="viewcode-block" id="SIMReconstructor"><a class="viewcode-back" href="../../sim.html#pycudasirecon.SIMReconstructor">[docs]</a><span class="k">class</span> <span class="nc">SIMReconstructor</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Main class for SIM reconstruction.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main class for SIM reconstruction.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -325,12 +328,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">process_volume</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SIMReconstructor.process_volume"><a class="viewcode-back" href="../../sim.html#pycudasirecon.SIMReconstructor.process_volume">[docs]</a>    <span class="k">def</span> <span class="nf">process_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Process the current volume.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the current volume.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">caplog</span><span class="p">():</span>
             <span class="n">lib</span><span class="o">.</span><span class="n">SR_processOneVolume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ptr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SIMReconstructor.set_raw"><a class="viewcode-back" href="../../sim.html#pycudasirecon.SIMReconstructor.set_raw">[docs]</a>    <span class="k">def</span> <span class="nf">set_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Assign `img` as the raw data to be reconstructed.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign `img` as the raw data to be reconstructed.&quot;&quot;&quot;</span>
         <span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">img</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C_CONTIGUOUS&quot;</span><span class="p">]:</span>
             <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
@@ -340,7 +343,7 @@
             <span class="n">lib</span><span class="o">.</span><span class="n">SR_setCurTimeIdx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ptr</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SIMReconstructor.get_result"><a class="viewcode-back" href="../../sim.html#pycudasirecon.SIMReconstructor.get_result">[docs]</a>    <span class="k">def</span> <span class="nf">get_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the current reconstruction result.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current reconstruction result.&quot;&quot;&quot;</span>
         <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">rp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_recon_params</span><span class="p">()</span>
         <span class="n">nz</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_image_params</span><span class="p">()</span><span class="o">.</span><span class="n">nz</span> <span class="o">*</span> <span class="n">rp</span><span class="o">.</span><span class="n">z_zoom</span><span class="p">)</span>
@@ -352,11 +355,11 @@
     <span class="c1"># TODO: can&#39;t add type hints here yet since build-docs will try to resolve them</span>
     <span class="c1"># and that requires the lib still.</span>
 <div class="viewcode-block" id="SIMReconstructor.get_recon_params"><a class="viewcode-back" href="../../sim.html#pycudasirecon.SIMReconstructor.get_recon_params">[docs]</a>    <span class="k">def</span> <span class="nf">get_recon_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lib</span><span class="o">.</span><span class="n">ReconParams</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the current reconstruction parameters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current reconstruction parameters.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">lib</span><span class="o">.</span><span class="n">ReconParams</span><span class="o">.</span><span class="n">from_address</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">SR_getReconParams</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ptr</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="SIMReconstructor.get_image_params"><a class="viewcode-back" href="../../sim.html#pycudasirecon.SIMReconstructor.get_image_params">[docs]</a>    <span class="k">def</span> <span class="nf">get_image_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lib</span><span class="o">.</span><span class="n">ImageParams</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the current image parameters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current image parameters.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">lib</span><span class="o">.</span><span class="n">ImageParams</span><span class="o">.</span><span class="n">from_address</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">SR_getImageParams</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ptr</span><span class="p">))</span></div></div>
 </pre></div>
         </article>
@@ -378,9 +381,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -395,15 +396,16 @@
 </div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/design-tabs.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
