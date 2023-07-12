@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import warnings
 from contextlib import nullcontext
+from itertools import zip_longest
 from pathlib import Path
-from typing import Any, ContextManager
+from typing import Any, ContextManager, Iterable
 
 import numpy as np
 
@@ -52,6 +53,10 @@ def reconstruct(
     np.ndarray
         The reconstructed array.
     """
+    array = np.asarray(array)
+    if array.ndim != 3:
+        raise ValueError("array must have 3 dimensions")
+
     if otf_file is not None:
         otf = otf_file
         warnings.warn(
@@ -79,6 +84,26 @@ def reconstruct(
     with _otf_context as _otf_path:
         with temp_config(otf_file=_otf_path, **kwargs) as cfg:
             return SIMReconstructor(array, cfg.name).get_result()
+
+
+def reconstruct_multi(
+    array: np.ndarray,
+    otf: np.ndarray | PathLike | None = None,
+    channel_axis: int | None = None,
+    kwargs: Iterable[dict] = (),
+) -> np.ndarray:
+    # get index of axis with the smallest size
+    cax = np.argmin(array.shape) if channel_axis is None else channel_axis
+
+    # split array along channel axis
+    split_ary = np.split(array, array.shape[cax], axis=cax)
+    # reconstruct each channel
+    reconstructed = [
+        reconstruct(ary.squeeze(), otf=otf, **(kwrg or {}))
+        for ary, kwrg in zip_longest(split_ary, kwargs)
+    ]
+    # stack along channel axis
+    return np.stack(reconstructed, axis=cax)
 
 
 class SIMReconstructor:

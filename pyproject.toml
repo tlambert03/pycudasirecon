@@ -39,11 +39,15 @@ dependencies = ["numpy", "pydantic", "tifffile", "typing_extensions"]
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov", "cupy"]
+cli = ["typer[all]", "mrc"]
 
 [project.urls]
 Source = "https://github.com/tlambert03/pycudasirecon"
 Tracker = "https://github.com/tlambert03/pycudasirecon/issues"
 Documentation = "https://talleylambert.com/pycudasirecon"
+
+[project.scripts]
+sirecon = "pycudasirecon.cli:app"
 
 [project.entry-points."napari.manifest"]
 pycudasirecon = "pycudasirecon:napari.yaml"
@@ -66,15 +70,13 @@ line-length = 88
 target-version = "py38"
 src = ["src/pycudasirecon", "tests"]
 select = [
-    "E", # style errors
-    "F", # flakes
-    "D", # pydocstyle
-    "I", # isort
+    "E",  # style errors
+    "F",  # flakes
+    "D",  # pydocstyle
+    "I",  # isort
     "UP", # pyupgrade
-    # "N",  # pep8-naming
     "S",    # bandit
     "C",    # flake8-comprehensions
-    "B",    # flake8-bugbear
     "A001", # flake8-builtins
     "RUF",  # ruff-specific rules
 ]
@@ -133,5 +135,5 @@ ignore = [
     "tests/**/*",
     "docs/**/*",
     "environment.yml",
-    "src/pycudasirecon/_version.py"
+    "src/pycudasirecon/_version.py",
 ]
