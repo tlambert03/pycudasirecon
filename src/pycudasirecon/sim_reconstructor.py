@@ -1,3 +1,5 @@
+"""Main sim reconstruction class."""
+
 from __future__ import annotations
 
 import warnings

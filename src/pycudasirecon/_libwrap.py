@@ -39,18 +39,15 @@ def SR_setRaw(self: CPointer, raw_data: np.ndarray, nx: int, ny: int, nz: int) -
 
 
 @lib.function
-def SR_loadAndRescaleImage(self: CPointer, it: int, iw: int) -> None:
-    ...
+def SR_loadAndRescaleImage(self: CPointer, it: int, iw: int) -> None: ...
 
 
 @lib.function
-def SR_setCurTimeIdx(self: CPointer, it: int) -> None:
-    ...
+def SR_setCurTimeIdx(self: CPointer, it: int) -> None: ...
 
 
 @lib.function
-def SR_processOneVolume(self: CPointer) -> None:
-    ...
+def SR_processOneVolume(self: CPointer) -> None: ...
 
 
 @lib.function
@@ -75,18 +72,15 @@ def SR_getImageParams(self: CPointer) -> CPointer:
 
 
 @lib.function
-def SR_setFile(self: CPointer, it: int, iw: int) -> None:
-    ...
+def SR_setFile(self: CPointer, it: int, iw: int) -> None: ...
 
 
 @lib.function
-def SR_writeResult(self: CPointer, it: int, iw: int) -> None:
-    ...
+def SR_writeResult(self: CPointer, it: int, iw: int) -> None: ...
 
 
 @lib.function
-def SR_closeFiles(self: CPointer) -> None:
-    ...
+def SR_closeFiles(self: CPointer) -> None: ...
 
 
 class ReconParams(Structure):

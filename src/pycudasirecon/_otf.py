@@ -4,10 +4,12 @@ from contextlib import contextmanager
 from pathlib import Path
 from subprocess import run
 from tempfile import NamedTemporaryFile
-from typing import Any, Iterator, Union
+from typing import TYPE_CHECKING, Any, Iterator, Union
 
-import numpy as np
 import tifffile
+
+if TYPE_CHECKING:
+    import numpy as np
 
 MAKEOTF = "makeotf"  # binary name for subprocess
 PathLike = Union[str, Path]
@@ -93,7 +95,7 @@ def make_otf(
             cmd.append(str(value))
 
     try:
-        run(cmd)  # noqa: S603
+        run(cmd)
     finally:
         if temp_psf is not None:
             Path(temp_psf.name).unlink(missing_ok=True)

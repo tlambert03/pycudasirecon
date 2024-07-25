@@ -20,9 +20,10 @@ if WIN:
     c_stdout = None
 else:
     libc = ctypes.CDLL(None)
-    c_stdout = ctypes.c_void_p.in_dll(libc, "stdout")
-    # sidenote: on mac this would be:
-    # c_stdout = ctypes.c_void_p.in_dll(libc, "__stdoutp")
+    if sys.platform == "darwin":
+        c_stdout = ctypes.c_void_p.in_dll(libc, "__stdoutp")
+    else:
+        c_stdout = ctypes.c_void_p.in_dll(libc, "stdout")
 
 
 @contextmanager
