@@ -38,7 +38,8 @@ dependencies = ["numpy", "pydantic", "tifffile", "typing_extensions"]
 # extras
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov", "cupy"]
+test = ["pytest", "pytest-cov", "cupy; sys_platform != 'darwin'"]
+dev = ["ipython", "rich", "ruff", "pre-commit", "mypy"]
 
 [project.urls]
 Source = "https://github.com/tlambert03/pycudasirecon"
@@ -59,37 +60,35 @@ version-file = "src/pycudasirecon/_version.py"
 [tool.hatch.build.targets.sdist]
 include = ["/src", "/tests"]
 
-
-# https://github.com/charliermarsh/ruff
+# https://docs.astral.sh/ruff
 [tool.ruff]
 line-length = 88
 target-version = "py38"
-src = ["src/pycudasirecon", "tests"]
+src = ["src"]
+
+# https://docs.astral.sh/ruff/rules
+[tool.ruff.lint]
+pydocstyle = { convention = "numpy" }
 select = [
-    "E", # style errors
-    "F", # flakes
-    "D", # pydocstyle
-    "I", # isort
-    "UP", # pyupgrade
-    # "N",  # pep8-naming
-    "S",    # bandit
-    "C",    # flake8-comprehensions
+    "E",    # style errors
+    "W",    # style warnings
+    "F",    # flakes
+    "D",    # pydocstyle
+    "D417", # Missing argument descriptions in Docstrings
+    "I",    # isort
+    "UP",   # pyupgrade
+    "C4",   # flake8-comprehensions
     "B",    # flake8-bugbear
     "A001", # flake8-builtins
     "RUF",  # ruff-specific rules
+    "TCH",  # flake8-type-checking
+    "TID",  # flake8-tidy-imports
 ]
 ignore = [
-    "D100", # Missing docstring in public module
-    "D107", # Missing docstring in __init__
-    "D203", # 1 blank line required before class docstring
-    "D212", # Multi-line docstring summary should start at the first line
-    "D213", # Multi-line docstring summary should start at the second line
-    "D400", # First line should end with a period
-    "D413", # Missing blank line after last section
-    "D416", # Section name should end with a colon
+    "D401", # First line should be in imperative mood (remove to opt in)
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*.py" = ["D", "S"]
 
 # https://docs.pytest.org/en/6.2.x/customize.html
@@ -133,5 +132,5 @@ ignore = [
     "tests/**/*",
     "docs/**/*",
     "environment.yml",
-    "src/pycudasirecon/_version.py"
+    "src/pycudasirecon/_version.py",
 ]
